@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/obligatorio.css">
+</head>
+
+<body>
+    <div id="contenedor">
+        <header>
+            <img id="logo" src="https://p1.develotion.com/cart.jpg" alt="logo" />
+            <nav>
+                <ul id="navPrincipal">
+                    <li>
+                        <a id="menuAdminAdministrarProductos">Administrar Productos</a>
+                    </li>
+                    <li>
+                        <a id="menuAdminListarCompras">Listar y aprobar Compras</a>
+                    </li>
+                    <li>
+                        <a id="menuAdminProducto">Crear Producto</a>
+                    </li>
+                    <li>
+                        <a id="menuAdminInforme">Ver informe</a>
+                    </li>
+                    <li>
+                        <a id="menuAdminCerrarSesion">Cerrar sesión</a>
+                    </li>
+                </ul>
+                <ul id="navPrincipalComprador">
+                    <li>
+                        <a id="menuCompradorSeccionx">Seccion x</a>
+                    </li>
+                    <li>
+                        <a id="menuCompradorSecciony">Seccion y</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <!-- FIN CABEZAL -->
+        <main>
+            <section id="pantallaLogin">
+                <h3>Login</h3>
+                <label for="txtLoginUsuario">Usuario</label>
+                <input type="text" id="txtLoginUsuario"> <br>
+                <label for="txtPass">Contraseña</label>
+                <input type="text" id="txtPass"> <br>
+                <input type="button" value="Login" id="btnLogin">
+
+                <input type="button" value="Registrar comprador" id="btnRegistrarComprador">
+
+
+            </section>
+
+            <section id="pantallaRegistro">
+                <h3>Registrar Usuario</h3>
+                <label for="txtNombre">Nombre</label>
+                <input type="text" id="txtNombre"> <br>
+
+                <label for="txtApellido">Apellido</label>
+                <input type="text" id="txtApellido"> <br>
+
+                <label for="txtUsuario">Usuario</label>
+                <input type="text" id="txtUsuario"> <br>
+
+                <label for="txtContraseña">Contraseña</label>
+                <input type="text" id="txtContraseña"> <br>
+
+                <label for="txtTarjeta">Tarjeta</label>
+                <input type="text" id="txtTarjeta"> <br>
+
+                <label for="txtCvc">Cvc</label>
+                <input type="text" id="txtCvc"> <br>
+
+                <input type="button" id="btnRegistrar" value="Registrar">
+                
+            </section>
+        </main>
+    </div>
+    <script src="js/obligatorio.js"></script>
+</body>
+
+</html>
