@@ -6,13 +6,7 @@ body {
   font-family: "Roboto Flex", sans-serif;
   background-color: #fafafa;
   margin: 0;
-}
-
-/* Estilos contenedor de todo el documento */
-#contenedor {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  box-sizing: border-box;
 }
 
 /* Estilos contenedor de todo el contenido  */
@@ -22,7 +16,6 @@ main {
 
 /* Titulos */
 h1,
-h2,
 h3,
 h5,
 h6 {
@@ -60,7 +53,7 @@ h4 {
 header img {
   margin: 20px;
   width: 60px;
-  border:1px solid #888;
+  border: 1px solid #888;
 }
 
 #navPrincipal a {
@@ -74,39 +67,37 @@ header img {
   color: #c0ca33;
 }
 
-
 /* Estilos nav comprador */
 #navPrincipalComprador {
-    float: right;
-    margin-top: 5px;
-    margin-right: 10px;
-    max-width: 700px;
-  }
-  
-  #navPrincipalComprador li {
-    list-style-type: none;
-    padding: 10px;
-    margin: 5px;
-    float: left;
-  }
-  
-  header img {
-    margin: 20px;
-    width: 60px;
-    border:1px solid #888;
-  }
-  
-  #navPrincipalComprador a {
-    cursor: pointer;
-    color: #fafafa;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  
-  #navPrincipalComprador a:hover {
-    color: #c0ca33;
-  }
+  float: right;
+  margin-top: 5px;
+  margin-right: 10px;
+  max-width: 700px;
+}
 
+#navPrincipalComprador li {
+  list-style-type: none;
+  padding: 10px;
+  margin: 5px;
+  float: left;
+}
+
+header img {
+  margin: 20px;
+  width: 60px;
+  border: 1px solid #888;
+}
+
+#navPrincipalComprador a {
+  cursor: pointer;
+  color: #fafafa;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#navPrincipalComprador a:hover {
+  color: #c0ca33;
+}
 
 header {
   background-color: #002e4a;
@@ -115,47 +106,6 @@ header {
   text-transform: uppercase;
   display: flex;
   justify-content: space-between;
-}
-
-/* Estilos tabla */
-table,
-th,
-td {
-  border-collapse: collapse;
-  border: none;
-  padding-left: 15px;
-  padding-bottom: 5px;
-  padding-top: 5px;
-  background-color: #fafafa;
-  text-align: center;
-}
-
-table {
-  min-width: 700px;
-}
-
-thead {
-  border-bottom: 1px solid black;
-  background-color: #fafafa;
-  color: #002e4a;
-  font-weight: normal;
-}
-
-table img {
-  max-width: 100px;
-}
-
-td > input[type="button"] {
-  max-width: 150px;
-  font-size: 12px;
-}
-
-table tr:nth-child(odd) td {
-  background-color: #ececec;
-}
-
-table tr:nth-child(even) td {
-  background-color: #fafafa;
 }
 
 /* Estilos label de los inputs */
@@ -193,7 +143,7 @@ button {
   background-color: #002e4a;
   color: #fafafa;
   border: 1px solid rgb(0, 58, 117);
-  border-radius: 6px;
+
   min-width: 100px;
   height: 35px;
   text-transform: uppercase;
@@ -203,6 +153,7 @@ input[type="button"]:hover {
   background-color: #c0ca33;
   border: 1px solid #eefe00;
   color: #fafafa;
+  cursor: pointer;
 }
 
 input[type="button"]:disabled {
@@ -228,4 +179,45 @@ footer a {
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
+}
+
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.productosContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.producto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid black;
+  height: 400px;
+}
+.producto-info {
+  max-width: 200px;
+}
+
+.img-container {
+  width: 150px;
+  height: 150px;
+}
+.producto img {
+  width: 150px;
+  height: 150px;
+}
+
+.btnComprarPruducto {
+  margin: 0;
+  border-radius: 0;
 }
