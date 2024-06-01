@@ -192,7 +192,9 @@ function ocultarTodo() {
   document.querySelector("#pantallaLogin").style.display = "none";
   document.querySelector("#navPrincipalComprador").style.display = "none";
   document.querySelector("#pantallaRegistro").style.display = "none";
-  document.querySelector(".productoDetailsSection").style.display = "none";
+  document
+    .querySelector(".productoDetailsSection")
+    .classList.remove("visibleEffect");
 }
 let userLoged = "";
 function hacerLogin() {
@@ -316,14 +318,13 @@ function renderizarProductosDisponibles() {
         </div>
         <div class="producto-info">
           <h3>${producto.nombre}</h3>
-          <p>${producto.descripcion}</p>    
           <p>Precio: ${producto.precio}</p>
-          <p>Stock: ${producto.stock}</p>
         </div>
         <input
           type="button"
-          value="Agregar a la compra"
+          value="Ver detalles"
           class="btnComprarPruducto"
+          data-idProducto="${producto.id}"
         />
       </div>
     `;
@@ -337,13 +338,58 @@ function renderizarProductosDisponibles() {
       document.querySelector(".compraDeProductosSection").style.display =
         "none";
 
-      document.querySelector(".productoDetailsSection").style.display = "block";
+      showProductDetails(boton.dataset.idproducto);
     });
   });
+}
+
+function showProductDetails(idProducto) {
+  const productosDetailsSection = document.querySelector(
+    ".productoDetailsSection"
+  );
+  productosDetailsSection.classList.add("visibleEffect");
+
+  const selectedProduct = sistema.listaProductos.find(
+    (producto) => producto.id === Number(idProducto)
+  );
+  if (!selectedProduct) {
+    console.error(`Producto con id ${idProducto} no encontrado`);
+    return;
+  }
+
+  const productDetails = `
+  <div class="productoDetailsContainer">
+    <div class="exitButtonDetails">X</div>
+    <h2 class="titleProductoDetails">${selectedProduct.nombre}</h2>
+  
+    
+    <div class="productoDetailsContainerImg">
+      <img src="${selectedProduct.urlImagen}" alt="imagenRandome" />
+    </div>
+    <div class='spansContainerProductoDetails'>
+    <span>${selectedProduct.descripcion}</span>
+    <span class="priceProductoDetails">Precio por unidad: $ ${selectedProduct.precio}</span>
+    <span class="stockProductoDetails">Cantidad de producto disponible: ${selectedProduct.stock}</span>
+    </div>
+    <div class="productoDetailsControlsContainer">
+    <label>Seleccione cuantas unidades desea comprar:<input type="number" id="btnSelectStockBuyer" value="selectStock" /></label>
+     
+      <input type="button" id="btnBuyBuyer" value="Buy" />
+    </div>
+  </div>
+  `;
+
+  productosDetailsSection.innerHTML = productDetails;
+  document
+    .querySelector(".productoDetailsContainer")
+    .classList.add("visibleEffect");
 
   document.querySelector(".exitButtonDetails").addEventListener("click", () => {
     document.querySelector(".compraDeProductosSection").style.display = "block";
-    document.querySelector(".productoDetailsSection").style.display = "none";
+    productosDetailsSection.classList.remove("visibleEffect");
+    document
+      .querySelector(".productoDetailsContainer")
+      .classList.remove("visibleEffect");
   });
 }
 
