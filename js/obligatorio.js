@@ -455,5 +455,5 @@ function showProductDetails(idProducto) {
 function showDataUser(userLoged) {
   document.querySelector(
     "#spanSaldo"
-  ).innerHTML = `Buenos días ${userLoged.nombre}, su saldo actual es de: ${userLoged.saldo}`;
+  ).innerHTML = `Hola ${userLoged.nombre}, su saldo es de:$${userLoged.saldo}`;
 }
