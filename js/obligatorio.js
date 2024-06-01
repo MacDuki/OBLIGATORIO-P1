@@ -136,10 +136,15 @@ class Administrador {
   }
 }
 
+function getRandomNumber() {
+  return Math.floor(Math.random() * 5) + 1;
+}
+
 class Comprador {
   constructor(nombre, apellido, usuario, pass, tarjeta, cvc, saldo = 3000) {
     this.id = contadorCompradores;
     this.nombre = nombre;
+
     this.apellido = apellido;
     this.usuario = usuario;
     this.pass = pass;
@@ -149,12 +154,40 @@ class Comprador {
     contadorCompradores++;
   }
 }
+
+//function handle rating
+
+function handleRating(rating) {
+  switch (rating) {
+    case 1:
+      return "⭐ (1/5)";
+    case 2:
+      return "⭐⭐ (2/5)";
+    case 3:
+      return "⭐⭐⭐ (3/5)";
+    case 4:
+      return "⭐⭐⭐⭐ (4/5)";
+    case 5:
+      return "⭐⭐⭐⭐⭐ (5/5)";
+    default:
+      return "⭐⭐⭐⭐⭐⭐(6/5)";
+  }
+}
+
 //poner las otras clases
 
 class Producto {
   static ultimoId = 0;
-  constructor(nombre, descripcion, urlImagen, precio, stock) {
+  constructor(
+    nombre,
+    descripcion,
+    urlImagen,
+    precio,
+    stock,
+    rating = getRandomNumber()
+  ) {
     this.id = ++Producto.ultimoId;
+    this.rating = rating;
     (this.nombre = nombre),
       (this.descripcion = descripcion),
       (this.urlImagen = urlImagen),
@@ -315,18 +348,26 @@ function renderizarProductosDisponibles() {
       <div class="producto">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
+          <div class="parrafoContainerProducto"> <p>$${
+            producto.precio
+          }</p></div>
+         
         </div>
         <div class="producto-info">
           <h3>${producto.nombre}</h3>
-          <p>Precio: ${producto.precio}</p>
+          <span class="ratingProducto">${handleRating(producto.rating)}</span>
         </div>
-        <input
-          type="button"
-          value="Ver detalles"
-          class="btnComprarPruducto"
-          data-idProducto="${producto.id}"
-        />
-      </div>
+
+
+        <button  
+        type="button"
+        value="Ver producto"
+        class="btnComprarPruducto btn-shine "
+        data-idProducto="${producto.id}" >
+        <span>Ver Producto</span>
+    </button>
+
+   
     `;
 
     productosContainer.innerHTML += productoHTML;
@@ -359,22 +400,37 @@ function showProductDetails(idProducto) {
 
   const productDetails = `
   <div class="productoDetailsContainer">
-    <div class="exitButtonDetails">X</div>
+    <div class="exitButtonDetailsContainer">
+      <button class="exitButtonDetails">
+      <span class="X"></span>
+      <span class="Y"></span>
+      <div class="close">Close</div>
+      </button>
+    </div>
     <h2 class="titleProductoDetails">${selectedProduct.nombre}</h2>
-  
-    
     <div class="productoDetailsContainerImg">
       <img src="${selectedProduct.urlImagen}" alt="imagenRandome" />
     </div>
     <div class='spansContainerProductoDetails'>
-    <span>${selectedProduct.descripcion}</span>
-    <span class="priceProductoDetails">Precio por unidad: $ ${selectedProduct.precio}</span>
-    <span class="stockProductoDetails">Cantidad de producto disponible: ${selectedProduct.stock}</span>
+      <span>${selectedProduct.descripcion}</span>    
+      <div class="priceAndStockContainer">
+        <span class="priceProductoDetails">$ ${selectedProduct.precio}</span>
+        <span class="stockProductoDetails">Stock: ${
+          selectedProduct.stock
+        }</span>
+      </div>
+      <span class="ratingProductoDetails">${handleRating(
+        selectedProduct.rating
+      )}</span>
     </div>
     <div class="productoDetailsControlsContainer">
-    <label>Seleccione cuantas unidades desea comprar:<input type="number" id="btnSelectStockBuyer" value="selectStock" /></label>
-     
-      <input type="button" id="btnBuyBuyer" value="Buy" />
+      <label>Cuantas unidades?<input type="number" min="1" id="btnSelectStockBuyer" placeholder="1" value="selectStock" /></label>
+      <button class="CartBtn">
+  <span class="IconContainer"> 
+    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" fill="rgb(17, 17, 17)" class="cart"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+  </span>
+  <p class="text">Add to Cart</p>
+</button>
     </div>
   </div>
   `;
