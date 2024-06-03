@@ -144,9 +144,8 @@ class Comprador {
   constructor(nombre, apellido, usuario, pass, tarjeta, cvc, saldo = 3000) {
     this.id = contadorCompradores;
     this.nombre = nombre;
-
     this.apellido = apellido;
-    this.usuario = usuario;
+    this.usuario = usuario.toLowerCase();
     this.pass = pass;
     this.tarjeta = tarjeta;
     this.cvc = cvc;
@@ -186,9 +185,9 @@ class Producto {
     stock,
     rating = getRandomNumber()
   ) {
-    this.id = ++Producto.ultimoId;
-    this.rating = rating;
-    (this.nombre = nombre),
+    (this.id = `PROD_ID_${++Producto.ultimoId}`),
+      (this.rating = rating),
+      (this.nombre = nombre),
       (this.descripcion = descripcion),
       (this.urlImagen = urlImagen),
       (this.precio = precio),
@@ -232,7 +231,7 @@ function ocultarTodo() {
 let userLoged = "";
 function hacerLogin() {
   // capturar los datos
-  let usuario = document.querySelector("#txtLoginUsuario").value;
+  let usuario = document.querySelector("#txtLoginUsuario").value.toLowerCase();
   let pass = document.querySelector("#txtPass").value;
   //obtengo un Admin con ese nombre de usuario
   //let adminBuscado=sistema.buscarAdmin(usuario)
