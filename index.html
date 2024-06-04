@@ -48,11 +48,12 @@
       <section id="pantallaLogin">
         <h3>Login</h3>
         <label for="txtLoginUsuario">Usuario</label>
-        <input type="text" id="txtLoginUsuario" /> <br />
+        <input type="text" id="txtLoginUsuario" />
         <label for="txtPass">Contraseña</label>
-        <input type="text" id="txtPass" /> <br />
-        <input type="button" value="Login" id="btnLogin" />
-
+        <div class="btnsLoginContainer">
+          <input type="text" id="txtPass" />
+          <input type="button" value="Login" id="btnLogin" />
+        </div>
         <input
           type="button"
           value="Registrar comprador"
@@ -62,24 +63,29 @@
 
       <section id="pantallaRegistro">
         <h3>Registrar Usuario</h3>
-        <label for="txtNombre">Nombre</label>
-        <input type="text" id="txtNombre" required /> <br />
+        <form class="formRegistro">
+          <div>
+            <label for="txtNombre">Nombre</label>
+            <input type="text" id="txtNombre" required /> <br />
 
-        <label for="txtApellido">Apellido</label>
-        <input type="text" id="txtApellido" required /> <br />
+            <label for="txtApellido">Apellido</label>
+            <input type="text" id="txtApellido" required /> <br />
 
-        <label for="txtUsuario">Usuario</label>
-        <input type="text" id="txtUsuario" required /> <br />
+            <label for="txtUsuario">Usuario</label>
+            <input type="text" id="txtUsuario" required /> <br />
+          </div>
+          <div>
+            <label for="txtContraseña">Contraseña</label>
+            <input type="text" id="txtContraseña" required /> <br />
 
-        <label for="txtContraseña">Contraseña</label>
-        <input type="text" id="txtContraseña" required /> <br />
+            <label for="txtTarjeta">Tarjeta</label>
+            <input type="text" id="txtTarjeta" required /> <br />
 
-        <label for="txtTarjeta">Tarjeta</label>
-        <input type="text" id="txtTarjeta" required /> <br />
-
-        <label for="txtCvc">Cvc</label>
-        <input type="text" id="txtCvc" required /> <br />
-        <div class="buttonsContainer">
+            <label for="txtCvc">Cvc</label>
+            <input type="text" id="txtCvc" required /> <br />
+          </div>
+        </form>
+        <div class="buttonsContainerRegistro">
           <input type="button" value="Volver" id="btnVolver" />
           <input type="button" id="btnRegistrar" value="Registrar" />
         </div>

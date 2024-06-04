@@ -31,14 +31,16 @@ class Sistema {
         "Este es el producto 1 y su descripción de guantes de boxeo",
         "https://m.media-amazon.com/images/I/51esH1W-asL._AC_UF1000,1000_QL80_.jpg",
         99,
-        200
+        200,
+        false
       ),
       new Producto(
         "Pelota de Fútbol",
         "Pelota de fútbol profesional de alta calidad.",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/%D0%A4%D0%9A_%22%D0%9A%D0%BE%D0%BB%D0%BE%D1%81%22_%28%D0%97%D0%B0%D1%87%D0%B5%D0%BF%D0%B8%D0%BB%D0%BE%D0%B2%D0%BA%D0%B0%2C_%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_-_%D0%A4%D0%9A_%22%D0%91%D0%B0%D0%BB%D0%BA%D0%B0%D0%BD%D1%8B%22_%28%D0%97%D0%B0%D1%80%D1%8F%2C_%D0%9E%D0%B4%D0%B5%D1%81%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_%2818790931100%29.jpg/800px-thumbnail.jpg",
         35,
-        150
+        150,
+        false
       ),
       new Producto(
         "Raqueta de Tenis",
@@ -136,10 +138,6 @@ class Administrador {
   }
 }
 
-function getRandomNumber() {
-  return Math.floor(Math.random() * 5) + 1;
-}
-
 class Comprador {
   constructor(nombre, apellido, usuario, pass, tarjeta, cvc, saldo = 3000) {
     this.id = contadorCompradores;
@@ -154,7 +152,42 @@ class Comprador {
   }
 }
 
+class Producto {
+  static ultimoId = 0;
+  constructor(
+    nombre,
+    descripcion,
+    urlImagen,
+    precio,
+    stock,
+    isAvailable = true,
+    rating = getRandomNumber()
+  ) {
+    this.isAvailable = isAvailable;
+    (this.id = `PROD_ID_${++Producto.ultimoId}`),
+      (this.rating = rating),
+      (this.nombre = nombre),
+      (this.descripcion = descripcion),
+      (this.urlImagen = urlImagen),
+      (this.precio = precio),
+      (this.stock = stock);
+  }
+}
+
+class compra {
+  constructor({ usuario, idProducto, precio, howMany, status = "pendiente" }) {
+    this.usuario = usuario;
+    this.idProducto = idProducto;
+    this.precio = precio;
+    this.howMany = Number(howMany);
+    this.status = status;
+  }
+}
+
 //function handle rating
+function getRandomNumber() {
+  return Math.floor(Math.random() * 5) + 1;
+}
 
 function handleRating(rating) {
   switch (rating) {
@@ -170,28 +203,6 @@ function handleRating(rating) {
       return "⭐⭐⭐⭐⭐ (5/5)";
     default:
       return "⭐⭐⭐⭐⭐⭐(6/5)";
-  }
-}
-
-//poner las otras clases
-
-class Producto {
-  static ultimoId = 0;
-  constructor(
-    nombre,
-    descripcion,
-    urlImagen,
-    precio,
-    stock,
-    rating = getRandomNumber()
-  ) {
-    (this.id = `PROD_ID_${++Producto.ultimoId}`),
-      (this.rating = rating),
-      (this.nombre = nombre),
-      (this.descripcion = descripcion),
-      (this.urlImagen = urlImagen),
-      (this.precio = precio),
-      (this.stock = stock);
   }
 }
 
@@ -343,7 +354,8 @@ function renderizarProductosDisponibles() {
   productosContainer.innerHTML = "";
 
   sistema.listaProductos.forEach((producto) => {
-    const productoHTML = `
+    if (producto.stock > 0 && producto.isAvailable) {
+      const productoHTML = `
       <div class="producto">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
@@ -368,8 +380,8 @@ function renderizarProductosDisponibles() {
 
    
     `;
-
-    productosContainer.innerHTML += productoHTML;
+      productosContainer.innerHTML += productoHTML;
+    }
   });
 
   const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
@@ -390,7 +402,7 @@ function showProductDetails(idProducto) {
   productosDetailsSection.classList.add("visibleEffect");
 
   const selectedProduct = sistema.listaProductos.find(
-    (producto) => producto.id === Number(idProducto)
+    (producto) => producto.id === idProducto
   );
   if (!selectedProduct) {
     console.error(`Producto con id ${idProducto} no encontrado`);
@@ -435,6 +447,7 @@ function showProductDetails(idProducto) {
   `;
 
   productosDetailsSection.innerHTML = productDetails;
+
   document
     .querySelector(".productoDetailsContainer")
     .classList.add("visibleEffect");
@@ -445,6 +458,29 @@ function showProductDetails(idProducto) {
     document
       .querySelector(".productoDetailsContainer")
       .classList.remove("visibleEffect");
+  });
+
+  //Add cart function
+
+  document.querySelectorAll(".CartBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      let selectedStock = Number(
+        document.querySelector("#btnSelectStockBuyer").value
+      );
+
+      sistema.listaCompras.push(
+        new compra({
+          usuario: userLoged,
+          idProducto: selectedProduct.id,
+          precio: selectedProduct.precio,
+          howMany:
+            selectedStock == 0 || selectedStock === undefined
+              ? (selectedStock = 1)
+              : selectedStock,
+        })
+      );
+      alert(`${sistema.listaCompras.length} compras agregadas`);
+    });
   });
 }
 
