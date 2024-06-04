@@ -61,7 +61,9 @@ class Sistema {
         "Guantes de boxeo de cuero con relleno extra para mayor protección.",
         "https://m.media-amazon.com/images/I/71gGKDXdoPL._AC_UF1000,1000_QL80_.jpg",
         85,
-        200
+        200,
+        true,
+        true
       ),
       new Producto(
         "Zapatillas para Correr",
@@ -82,7 +84,8 @@ class Sistema {
         "Casco de ciclismo aerodinámico con ventilación mejorada.",
         "https://images.ecestaticos.com/oRpsnZZrRBfcZAzDhIseaACvYFk=/1x151:999x659/1440x810/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fbd5%2Fa89%2Fc26%2Fbd5a89c26e32422bc1677edcdf1579e6.jpg",
         45,
-        120
+        120,
+
       ),
       new Producto(
         "Traje de Neopreno",
@@ -161,7 +164,9 @@ class Producto {
     precio,
     stock,
     isAvailable = true,
-    rating = getRandomNumber()
+    isSale = false,
+    rating = getRandomNumber(),
+
   ) {
     this.isAvailable = isAvailable;
     (this.id = `PROD_ID_${++Producto.ultimoId}`),
@@ -170,7 +175,8 @@ class Producto {
       (this.descripcion = descripcion),
       (this.urlImagen = urlImagen),
       (this.precio = precio),
-      (this.stock = stock);
+      (this.stock = stock),
+      (this.isSale = isSale)
   }
 }
 
@@ -238,6 +244,8 @@ function ocultarTodo() {
   document
     .querySelector(".productoDetailsSection")
     .classList.remove("visibleEffect");
+
+    document.querySelector(".productosEnOferta").style.display = 'none'
 }
 let userLoged = "";
 function hacerLogin() {
@@ -275,6 +283,8 @@ function hacerLogin() {
         document.querySelector("#navPrincipalComprador").style.display =
           "block";
         userLoged = usuario;
+        document.querySelector("#menuCompradorOferta").addEventListener("click", productosEnOferta)
+
       }
     }
   }
@@ -349,6 +359,8 @@ document.querySelector("#deslogearseButton").addEventListener("click", () => {
 //PRODUCTOS DISPONIBLES SECCIÓN
 document.addEventListener("DOMContentLoaded", renderizarProductosDisponibles);
 
+
+
 function renderizarProductosDisponibles() {
   const productosContainer = document.querySelector(".productosContainer");
   productosContainer.innerHTML = "";
@@ -359,9 +371,8 @@ function renderizarProductosDisponibles() {
       <div class="producto">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
-          <div class="parrafoContainerProducto"> <p>$${
-            producto.precio
-          }</p></div>
+          <div class="parrafoContainerProducto"> <p>$${producto.precio
+        }</p></div>
          
         </div>
         <div class="producto-info">
@@ -395,6 +406,7 @@ function renderizarProductosDisponibles() {
   });
 }
 
+
 function showProductDetails(idProducto) {
   const productosDetailsSection = document.querySelector(
     ".productoDetailsSection"
@@ -426,13 +438,12 @@ function showProductDetails(idProducto) {
       <span>${selectedProduct.descripcion}</span>    
       <div class="priceAndStockContainer">
         <span class="priceProductoDetails">$ ${selectedProduct.precio}</span>
-        <span class="stockProductoDetails">Stock: ${
-          selectedProduct.stock
-        }</span>
+        <span class="stockProductoDetails">Stock: ${selectedProduct.stock
+    }</span>
       </div>
       <span class="ratingProductoDetails">${handleRating(
-        selectedProduct.rating
-      )}</span>
+      selectedProduct.rating
+    )}</span>
     </div>
     <div class="productoDetailsControlsContainer">
       <label>Cuantas unidades?<input type="number" min="1" id="btnSelectStockBuyer" placeholder="1" value="selectStock" /></label>
@@ -491,4 +502,48 @@ function showDataUser(userLoged) {
   document.querySelector(
     "#spanSaldo"
   ).innerHTML = `Hola ${userLoged.nombre}, su saldo es de:$${userLoged.saldo}`;
+}
+
+
+function productosEnOferta() {
+  document.querySelector(".compraDeProductosSection").style.display = 'none'
+  const sectionProductosOferta = document.querySelector(".productosEnOferta");
+  sectionProductosOferta.innerHTML = "";
+
+  sistema.listaProductos.forEach((producto) => {
+    if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
+      const productoHTML = `
+      <div class="producto">
+        <div class='img-container'>
+          <img src="${producto.urlImagen}" alt="${producto.nombre}">
+          <div class="parrafoContainerProducto"> <p>$${producto.precio
+        }</p></div>
+         
+        </div>
+        <div class="producto-info">
+          <h3>${producto.nombre}</h3>
+          <span class="ratingProducto">${handleRating(producto.rating)}</span>
+        </div>
+
+
+        <button  
+        type="button"
+        value="Ver producto"
+        class="btnComprarPruducto btn-shine "
+        data-idProducto="${producto.id}" >
+        <span>Ver Producto</span>
+    </button>
+
+   
+    `;
+      sectionProductosOferta.innerHTML += productoHTML;
+
+      document.querySelector(".productosEnOferta").style.display = 'block'
+
+    }
+  });
+
+  
+
+
 }
