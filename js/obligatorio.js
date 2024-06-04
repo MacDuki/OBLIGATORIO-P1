@@ -212,7 +212,7 @@ inicio();
 function inicio() {
   ocultarTodo();
   document.querySelector("#pantallaLogin").style.display = "block";
-
+  document.querySelector(".compraDeProductosSection").style.display = "none";
   document.querySelector("#btnLogin").addEventListener("click", () => {
     hacerLogin();
     const userSesionIniciada = sistema.listaCompradores.find(
@@ -256,7 +256,7 @@ function hacerLogin() {
   if (adminBuscado != null) {
     if (adminBuscado.pass === pass) {
       //alert("login ok")
-      ocultarTodo();
+
       document.querySelector("#navPrincipal").style.display = "block";
     } else {
       alert("password incorrecto");
@@ -271,8 +271,10 @@ function hacerLogin() {
     //hacer la logica del comprador
     if (compradorBuscado !== null) {
       if (compradorBuscado.pass === pass) {
-        ocultarTodo();
         document.querySelector("#navPrincipalComprador").style.display =
+          "block";
+        document.querySelector("#pantallaLogin").style.display = "none";
+        document.querySelector(".compraDeProductosSection").style.display =
           "block";
         userLoged = usuario;
       }
