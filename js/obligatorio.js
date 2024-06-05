@@ -84,8 +84,7 @@ class Sistema {
         "Casco de ciclismo aerodinámico con ventilación mejorada.",
         "https://images.ecestaticos.com/oRpsnZZrRBfcZAzDhIseaACvYFk=/1x151:999x659/1440x810/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fbd5%2Fa89%2Fc26%2Fbd5a89c26e32422bc1677edcdf1579e6.jpg",
         45,
-        120,
-
+        120
       ),
       new Producto(
         "Traje de Neopreno",
@@ -165,8 +164,7 @@ class Producto {
     stock,
     isAvailable = true,
     isSale = false,
-    rating = getRandomNumber(),
-
+    rating = getRandomNumber()
   ) {
     this.isAvailable = isAvailable;
     (this.id = `PROD_ID_${++Producto.ultimoId}`),
@@ -176,7 +174,7 @@ class Producto {
       (this.urlImagen = urlImagen),
       (this.precio = precio),
       (this.stock = stock),
-      (this.isSale = isSale)
+      (this.isSale = isSale);
   }
 }
 
@@ -241,12 +239,14 @@ function ocultarTodo() {
   document.querySelector("#pantallaLogin").style.display = "none";
   document.querySelector("#navPrincipalComprador").style.display = "none";
   document.querySelector("#pantallaRegistro").style.display = "none";
+  document.querySelector(".compraDeProductosSection").style.display = "none";
   document
     .querySelector(".productoDetailsSection")
     .classList.remove("visibleEffect");
 
-    document.querySelector(".productosEnOferta").style.display = 'none'
+  document.querySelector(".productosEnOferta").style.display = "none";
 }
+
 let userLoged = "";
 function hacerLogin() {
   // capturar los datos
@@ -282,14 +282,16 @@ function hacerLogin() {
         ocultarTodo();
         document.querySelector("#navPrincipalComprador").style.display =
           "block";
+        document.querySelector(".compraDeProductosSection").style.display =
+          "block";
+        handleSectionProducts();
+        document
+          .querySelector(".buttonSectionChange")
+          .addEventListener("click", handleSectionProducts);
         userLoged = usuario;
-        document.querySelector("#menuCompradorOferta").addEventListener("click", productosEnOferta)
-
       }
     }
   }
-
-  //si es la contraseña correcta muestro el menu
 }
 
 function mostrarPantallaRegistro() {
@@ -359,20 +361,19 @@ document.querySelector("#deslogearseButton").addEventListener("click", () => {
 //PRODUCTOS DISPONIBLES SECCIÓN
 document.addEventListener("DOMContentLoaded", renderizarProductosDisponibles);
 
-
-
 function renderizarProductosDisponibles() {
   const productosContainer = document.querySelector(".productosContainer");
   productosContainer.innerHTML = "";
 
   sistema.listaProductos.forEach((producto) => {
-    if (producto.stock > 0 && producto.isAvailable) {
+    if (producto.stock > 0 && producto.isAvailable && !producto.isSale) {
       const productoHTML = `
       <div class="producto">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
-          <div class="parrafoContainerProducto"> <p>$${producto.precio
-        }</p></div>
+          <div class="parrafoContainerProducto"> <p>$${
+            producto.precio
+          }</p></div>
          
         </div>
         <div class="producto-info">
@@ -406,7 +407,6 @@ function renderizarProductosDisponibles() {
   });
 }
 
-
 function showProductDetails(idProducto) {
   const productosDetailsSection = document.querySelector(
     ".productoDetailsSection"
@@ -438,12 +438,13 @@ function showProductDetails(idProducto) {
       <span>${selectedProduct.descripcion}</span>    
       <div class="priceAndStockContainer">
         <span class="priceProductoDetails">$ ${selectedProduct.precio}</span>
-        <span class="stockProductoDetails">Stock: ${selectedProduct.stock
-    }</span>
+        <span class="stockProductoDetails">Stock: ${
+          selectedProduct.stock
+        }</span>
       </div>
       <span class="ratingProductoDetails">${handleRating(
-      selectedProduct.rating
-    )}</span>
+        selectedProduct.rating
+      )}</span>
     </div>
     <div class="productoDetailsControlsContainer">
       <label>Cuantas unidades?<input type="number" min="1" id="btnSelectStockBuyer" placeholder="1" value="selectStock" /></label>
@@ -464,7 +465,9 @@ function showProductDetails(idProducto) {
     .classList.add("visibleEffect");
 
   document.querySelector(".exitButtonDetails").addEventListener("click", () => {
-    document.querySelector(".compraDeProductosSection").style.display = "block";
+    document.querySelector(
+      ` ${isInSale ? ".compraDeProductosSection" : ".productosEnOferta"} `
+    ).style.display = "block";
     productosDetailsSection.classList.remove("visibleEffect");
     document
       .querySelector(".productoDetailsContainer")
@@ -504,20 +507,22 @@ function showDataUser(userLoged) {
   ).innerHTML = `Hola ${userLoged.nombre}, su saldo es de:$${userLoged.saldo}`;
 }
 
+let isInSale = false;
 
 function productosEnOferta() {
-  document.querySelector(".compraDeProductosSection").style.display = 'none'
   const sectionProductosOferta = document.querySelector(".productosEnOferta");
   sectionProductosOferta.innerHTML = "";
 
   sistema.listaProductos.forEach((producto) => {
     if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
       const productoHTML = `
+      <h2 style="">Productos en oferta</h2>
       <div class="producto">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
-          <div class="parrafoContainerProducto"> <p>$${producto.precio
-        }</p></div>
+          <div class="parrafoContainerProducto"> <p>$${
+            producto.precio
+          }</p></div>
          
         </div>
         <div class="producto-info">
@@ -537,13 +542,31 @@ function productosEnOferta() {
    
     `;
       sectionProductosOferta.innerHTML += productoHTML;
-
-      document.querySelector(".productosEnOferta").style.display = 'block'
-
     }
+
+    const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
+    botonesComprar.forEach((boton) => {
+      boton.addEventListener("click", () => {
+        document.querySelector(".productosEnOferta").style.display = "none";
+
+        showProductDetails(boton.dataset.idproducto);
+      });
+    });
   });
+}
 
-  
-
-
+function handleSectionProducts() {
+  isInSale = !isInSale;
+  if (isInSale) {
+    document.querySelector(".buttonSectionChange").innerHTML = "Ver ofertas";
+    document.querySelector(".productosEnOferta").style.display = "none";
+    document.querySelector(".compraDeProductosSection").style.display = "block";
+    renderizarProductosDisponibles();
+  } else {
+    document.querySelector(".buttonSectionChange").innerHTML =
+      "Volver a inicio";
+    document.querySelector(".productosEnOferta").style.display = "block";
+    document.querySelector(".compraDeProductosSection").style.display = "none";
+    productosEnOferta();
+  }
 }
