@@ -215,7 +215,7 @@ inicio();
 
 function inicio() {
 	ocultarTodo();
-	document.querySelector("#pantallaLogin").style.display = "block";
+	document.querySelector("#loginSection").style.display = "block";
 
 	document.querySelector("#btnLogin").addEventListener("click", () => {
 		hacerLogin();
@@ -227,7 +227,7 @@ function inicio() {
 
 	document
 		.querySelector("#btnRegistrarComprador")
-		.addEventListener("click", mostrarPantallaRegistro);
+		.addEventListener("click", mostrarregistroSection);
 
 	document
 		.querySelector("#btnRegistrar")
@@ -236,15 +236,15 @@ function inicio() {
 
 function ocultarTodo() {
 	document.querySelector("#navPrincipal").style.display = "none";
-	document.querySelector("#pantallaLogin").style.display = "none";
+	document.querySelector("#loginSection").style.display = "none";
 	document.querySelector("#navPrincipalComprador").style.display = "none";
-	document.querySelector("#pantallaRegistro").style.display = "none";
-	document.querySelector(".compraDeProductosSection").style.display = "none";
+	document.querySelector("#registroSection").style.display = "none";
+	document.querySelector("#compraDeProductosSection").style.display = "none";
 	document
-		.querySelector(".productoDetailsSection")
+		.querySelector("#productoDetailsSection")
 		.classList.remove("visibleEffect");
 
-	document.querySelector(".productosEnOferta").style.display = "none";
+	document.querySelector("#productosEnOfertaSection").style.display = "none";
 }
 
 let userLoged = "";
@@ -282,7 +282,7 @@ function hacerLogin() {
 				ocultarTodo();
 				document.querySelector("#navPrincipalComprador").style.display =
 					"block";
-				document.querySelector(".compraDeProductosSection").style.display =
+				document.querySelector("#compraDeProductosSection").style.display =
 					"block";
 				handleSectionProducts();
 				document
@@ -294,9 +294,9 @@ function hacerLogin() {
 	}
 }
 
-function mostrarPantallaRegistro() {
+function mostrarregistroSection() {
 	ocultarTodo();
-	document.querySelector("#pantallaRegistro").style.display = "block";
+	document.querySelector("#registroSection").style.display = "block";
 }
 
 function registrarse() {
@@ -327,7 +327,7 @@ function registrarse() {
 	) {
 		sistema.agregarComprador(nuevoComprador);
 		ocultarTodo();
-		document.querySelector("#pantallaLogin").style.display = "block";
+		document.querySelector("#loginSection").style.display = "block";
 		alert("registrado correctamente");
 	} else if (!sistema.esUsuarioUnico(usuario)) {
 		alert("usuario ya registrado, debe usar otro username");
@@ -345,17 +345,19 @@ function registrarse() {
 //regresar function
 document.querySelector("#btnVolver").addEventListener("click", () => {
 	ocultarTodo();
-	document.querySelector("#pantallaLogin").style.display = "block";
+	document.querySelector("#loginSection").style.display = "block";
 	document.querySelector("#txtLoginUsuario").value = "";
 	document.querySelector("#txtPass").value = "";
 });
 
 // Logout function
 document.querySelector("#deslogearseButton").addEventListener("click", () => {
-	ocultarTodo();
-	document.querySelector("#pantallaLogin").style.display = "block";
-	document.querySelector("#txtLoginUsuario").value = "";
-	document.querySelector("#txtPass").value = "";
+	if (!isBlocked) {
+		ocultarTodo();
+		document.querySelector("#loginSection").style.display = "block";
+		document.querySelector("#txtLoginUsuario").value = "";
+		document.querySelector("#txtPass").value = "";
+	}
 });
 
 //PRODUCTOS DISPONIBLES SECCIÓN
@@ -399,7 +401,7 @@ function renderizarProductosDisponibles() {
 	const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
 	botonesComprar.forEach((boton) => {
 		boton.addEventListener("click", () => {
-			document.querySelector(".compraDeProductosSection").style.display =
+			document.querySelector("#compraDeProductosSection").style.display =
 				"none";
 
 			showProductDetails(boton.dataset.idproducto);
@@ -410,7 +412,7 @@ function renderizarProductosDisponibles() {
 function showProductDetails(idProducto) {
 	isBlocked = true;
 	const productosDetailsSection = document.querySelector(
-		".productoDetailsSection"
+		"#productoDetailsSection"
 	);
 	productosDetailsSection.classList.add("visibleEffect");
 
@@ -467,7 +469,9 @@ function showProductDetails(idProducto) {
 
 	document.querySelector(".exitButtonDetails").addEventListener("click", () => {
 		document.querySelector(
-			` ${isInSale ? ".compraDeProductosSection" : ".productosEnOferta"} `
+			` ${
+				isInSale ? "#compraDeProductosSection" : "#productosEnOfertaSection"
+			} `
 		).style.display = "block";
 		productosDetailsSection.classList.remove("visibleEffect");
 		isBlocked = false;
@@ -512,7 +516,9 @@ function showDataUser(userLoged) {
 let isInSale = false;
 
 function productosEnOferta() {
-	const sectionProductosOferta = document.querySelector(".productosEnOferta");
+	const sectionProductosOferta = document.querySelector(
+		"#productosEnOfertaSection"
+	);
 	sectionProductosOferta.innerHTML = "";
 
 	sistema.listaProductos.forEach((producto) => {
@@ -549,7 +555,8 @@ function productosEnOferta() {
 		const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
 		botonesComprar.forEach((boton) => {
 			boton.addEventListener("click", () => {
-				document.querySelector(".productosEnOferta").style.display = "none";
+				document.querySelector("#productosEnOfertaSection").style.display =
+					"none";
 
 				showProductDetails(boton.dataset.idproducto);
 			});
@@ -563,14 +570,14 @@ function handleSectionProducts() {
 	isInSale = !isInSale;
 	if (isInSale && !isBlocked) {
 		document.querySelector(".buttonSectionChange").innerHTML = "Ver ofertas";
-		document.querySelector(".productosEnOferta").style.display = "none";
-		document.querySelector(".compraDeProductosSection").style.display = "block";
+		document.querySelector("#productosEnOfertaSection").style.display = "none";
+		document.querySelector("#compraDeProductosSection").style.display = "block";
 		renderizarProductosDisponibles();
 	} else if (!isBlocked) {
 		document.querySelector(".buttonSectionChange").innerHTML =
 			"Volver a inicio";
-		document.querySelector(".productosEnOferta").style.display = "block";
-		document.querySelector(".compraDeProductosSection").style.display = "none";
+		document.querySelector("#productosEnOfertaSection").style.display = "block";
+		document.querySelector("#compraDeProductosSection").style.display = "none";
 		productosEnOferta();
 	}
 }
