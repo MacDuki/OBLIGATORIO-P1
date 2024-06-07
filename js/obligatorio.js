@@ -101,11 +101,7 @@ class Sistema {
 				80
 			),
 		];
-		this.listaCompras = [
-			new compra({
-				usuario: "Pedro",
-			}),
-		];
+		this.listaCompras = [];
 	}
 
 	agregarComprador(comprador) {
@@ -593,7 +589,7 @@ function listaDeCompras() {
 	const historialDeCompras = document.getElementById("SectionListaDeCompras");
 	historialDeCompras.innerHTML = "";
 	sistema.listaCompras.forEach((compra) => {
-		historialDeCompras += `
+		historialDeCompras.innerHTML += `
 	<div class="section-container">
 	<div class="order-list">
 	  <div class="order-item">
