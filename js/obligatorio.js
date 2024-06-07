@@ -101,7 +101,11 @@ class Sistema {
 				80
 			),
 		];
-		this.listaCompras = [];
+		this.listaCompras = [
+			new compra({
+				usuario: "Pedro",
+			}),
+		];
 	}
 
 	agregarComprador(comprador) {
@@ -179,12 +183,12 @@ class Producto {
 }
 
 class compra {
-	constructor({ usuario, idProducto, precio, howMany, status = "pendiente" }) {
+	constructor({ usuario, precio, howMany, status = "pendiente", producto }) {
 		this.usuario = usuario;
-		this.idProducto = idProducto;
 		this.precio = precio;
 		this.howMany = Number(howMany);
 		this.status = status;
+		this.producto = producto;
 	}
 }
 
@@ -289,6 +293,9 @@ function hacerLogin() {
 					.querySelector(".buttonSectionChange")
 					.addEventListener("click", handleSectionProducts);
 				userLoged = usuario;
+				document
+					.getElementById("changeSectionOrderList")
+					.addEventListener("click", listaDeCompras);
 			}
 		}
 	}
@@ -491,7 +498,7 @@ function showProductDetails(idProducto) {
 			sistema.listaCompras.push(
 				new compra({
 					usuario: userLoged,
-					idProducto: selectedProduct.id,
+					producto: selectedProduct,
 					precio: selectedProduct.precio,
 					howMany:
 						selectedStock == 0 || selectedStock === undefined
@@ -580,4 +587,34 @@ function handleSectionProducts() {
 		document.querySelector("#compraDeProductosSection").style.display = "none";
 		productosEnOferta();
 	}
+}
+
+function listaDeCompras() {
+	const historialDeCompras = document.getElementById("SectionListaDeCompras");
+	historialDeCompras.innerHTML = "";
+	sistema.listaCompras.forEach((compra) => {
+		historialDeCompras += `
+	<div class="section-container">
+	<div class="order-list">
+	  <div class="order-item">
+		<img
+		  src="${compra.producto.urlImagen}"
+		  alt="Acme Wireless Headphones"
+		  width="80"
+		  height="80"
+		  class="order-image"
+		/>
+		<div class="order-info">
+		  <h3 class="order-title">${compra.producto.nombre}</h3>
+		  <p class="order-quantity">Quantity: 1</p>
+		</div>
+		<div class="order-price">$99.99</div>
+	  </div>
+	 
+`;
+	});
+
+	document.getElementById("compraDeProductosSection").style.display = "none";
+	document.getElementById("productosEnOfertaSection").style.display = "none";
+	document.getElementById("SectionListaDeCompras").style.display = "block";
 }
