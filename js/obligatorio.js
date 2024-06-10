@@ -1,3 +1,15 @@
+document.addEventListener("DOMContentLoaded", () => {
+	renderContentLoginHTML();
+});
+
+const HTMLNAVBAR = document.querySelector(".navBar");
+const HTMLSECTION = document.getElementById("SECTION");
+let renderSection = "";
+let renderNavBar = "";
+let userLoged = "";
+let isAdmin = false;
+let isComprador = false;
+let isInSales = false;
 let contadorAdministradores = 1;
 let contadorCompradores = 1;
 
@@ -70,7 +82,9 @@ class Sistema {
 				"Zapatillas ligeras y cómodas diseñadas para maratones.",
 				"https://www.hola.com/us/images/0275-1520a8373d35-1d24cebc0cf6-1000/horizontal-1200/balenciaga-zapatillas.jpg",
 				60,
-				100
+				100,
+				true,
+				true
 			),
 			new Producto(
 				"Pesas Ajustables",
@@ -104,10 +118,6 @@ class Sistema {
 		this.listaCompras = [];
 	}
 
-	agregarComprador(comprador) {
-		this.listaCompradores.push(comprador);
-	}
-
 	esUsuarioUnico(usuario) {
 		for (let comprador of this.listaCompradores) {
 			if (comprador.usuario === usuario) {
@@ -115,19 +125,6 @@ class Sistema {
 			}
 		}
 		return true;
-	}
-
-	//VAMOS A HACER FUNCIONES GENÉRICAS PARA BUSCAR CUALQUIER OBJETO / POSICIÓN DE OBJETO EN UN ARRAY
-	obtenerElemento(arrayElem, prop, valor) {
-		let obj = null;
-		for (let i = 0; i < arrayElem.length; i++) {
-			const unElemento = arrayElem[i];
-			if (unElemento[prop] === valor) {
-				obj = unElemento;
-				break;
-			}
-		}
-		return obj;
 	}
 }
 
@@ -210,99 +207,263 @@ function handleRating(rating) {
 	}
 }
 
-const sistema = new Sistema();
-inicio();
-
-function inicio() {
-	ocultarTodo();
-	document.querySelector("#loginSection").style.display = "block";
-
-	document.querySelector("#btnLogin").addEventListener("click", () => {
-		hacerLogin();
-		const userSesionIniciada = sistema.listaCompradores.find(
-			(comprador) => comprador.usuario === `${userLoged}`
-		);
-		showDataUser(userSesionIniciada);
-	});
-
-	document
-		.querySelector("#btnRegistrarComprador")
-		.addEventListener("click", mostrarregistroSection);
-
-	document
-		.querySelector("#btnRegistrar")
-		.addEventListener("click", registrarse);
-}
-
-function ocultarTodo() {
-	document.querySelector("#navPrincipal").style.display = "none";
-	document.querySelector("#loginSection").style.display = "none";
-	document.querySelector("#navPrincipalComprador").style.display = "none";
-	document.querySelector("#registroSection").style.display = "none";
-	document.querySelector("#compraDeProductosSection").style.display = "none";
-	document
-		.querySelector("#productoDetailsSection")
-		.classList.remove("visibleEffect");
-
-	document.querySelector("#productosEnOfertaSection").style.display = "none";
-}
-
-let userLoged = "";
-function hacerLogin() {
-	// capturar los datos
-	let usuario = document.querySelector("#txtLoginUsuario").value.toLowerCase();
-	let pass = document.querySelector("#txtPass").value;
-	//obtengo un Admin con ese nombre de usuario
-	//let adminBuscado=sistema.buscarAdmin(usuario)
-	let adminBuscado = sistema.obtenerElemento(
-		sistema.listaAdministradores,
-		"usuario",
-		usuario
-	);
-	//si no es null verifico que la contraseña se la correcta
-
-	if (adminBuscado != null) {
-		if (adminBuscado.pass === pass) {
-			//alert("login ok")
-			ocultarTodo();
-			document.querySelector("#navPrincipal").style.display = "block";
-		} else {
-			alert("password incorrecto");
-		}
-	} else {
-		//busco el comprador
-		let compradorBuscado = sistema.obtenerElemento(
-			sistema.listaCompradores,
-			"usuario",
-			usuario
-		);
-		//hacer la logica del comprador
-		if (compradorBuscado !== null) {
-			if (compradorBuscado.pass === pass) {
-				ocultarTodo();
-				document.querySelector("#navPrincipalComprador").style.display =
-					"block";
-				document.querySelector("#compraDeProductosSection").style.display =
-					"block";
-				handleSectionProducts();
-				document
-					.querySelector(".buttonSectionChange")
-					.addEventListener("click", handleSectionProducts);
-				userLoged = usuario;
-				document
-					.getElementById("changeSectionOrderList")
-					.addEventListener("click", listaDeCompras);
-			}
-		}
+function addEventListenerSafely(selector, event, handler) {
+	const element = document.querySelector(selector);
+	if (element) {
+		element.addEventListener(event, handler);
 	}
 }
 
-function mostrarregistroSection() {
-	ocultarTodo();
-	document.querySelector("#registroSection").style.display = "block";
+function renderContentLoginHTML() {
+	renderSection = `
+	<div>
+			<h2>Login</h2>
+			<label for="txtLoginUsuario">Usuario</label>
+			<input type="text" id="txtLoginUsuario" />
+			<label for="txtPass">Contraseña</label>
+			<div class="btnsLoginContainer">
+				<input type="text" id="txtPass" />
+				<input type="button" value="Login" id="btnLogin" />
+			</div>
+			<input
+				type="button"
+				value="Registrar comprador"
+				id="btnRegistrarComprador" />
+				</div>`;
+
+	HTMLSECTION.innerHTML = renderSection;
+
+	addEventListenerSafely(
+		"#btnRegistrarComprador",
+		"click",
+		renderContentRegistrarCompradorHTML
+	);
+
+	addEventListenerSafely("#btnLogin", "click", handleLogin);
 }
 
-function registrarse() {
+function renderContentRegistrarCompradorHTML() {
+	renderSection = `
+	<div>
+	<h2>Registrar Usuario</h2>
+				<form class="formRegistro">
+					<div>
+						<label for="txtNombre">Nombre</label>
+						<input type="text" id="txtNombre" required /> <br />
+
+						<label for="txtApellido">Apellido</label>
+						<input type="text" id="txtApellido" required /> <br />
+
+						<label for="txtUsuario">Usuario</label>
+						<input type="text" id="txtUsuario" required /> <br />
+					</div>
+					<div>
+						<label for="txtContraseña">Contraseña</label>
+						<input type="text" id="txtContraseña" required /> <br />
+
+						<label for="txtTarjeta">Tarjeta</label>
+						<input type="text" id="txtTarjeta" required /> <br />
+
+						<label for="txtCvc">Cvc</label>
+						<input type="text" id="txtCvc" required /> <br />
+					</div>
+				</form>
+				<div class="buttonsContainerRegistro">
+					<input type="button" value="Volver" id="btnVolver" />
+					<input type="button" id="btnRegistrar" value="Registrar" />
+				</div>
+				</div>
+				`;
+	HTMLSECTION.innerHTML = renderSection;
+	addEventListenerSafely("#btnVolver", "click", renderContentLoginHTML);
+	addEventListenerSafely("#btnRegistrar", "click", handleRegistrarComprador);
+}
+
+function renderContentHomeHTML() {
+	renderSection = `
+	<div>
+				<h2>Productos disponibles</h2>
+				<div class="productosContainer"></div>
+				</div>
+			`;
+
+	HTMLSECTION.innerHTML = renderSection;
+
+	sistema.listaProductos.forEach((producto) => {
+		if (producto.stock > 0 && producto.isAvailable && !producto.isSale) {
+			const productoHTML = `
+			  <div class="producto">
+				<div class='img-container'>
+				  <img src="${producto.urlImagen}" alt="${producto.nombre}">
+				  <div class="parrafoContainerProducto"> <p>$${producto.precio}</p></div>
+				 
+				</div>
+				<div class="producto-info">
+				  <h3>${producto.nombre}</h3>
+				  <span class="ratingProducto">${handleRating(producto.rating)}</span>
+				</div>
+		
+		
+				<button  
+				type="button"
+				value="Ver producto"
+				class="btnComprarPruducto btn-shine "
+				data-idProducto="${producto.id}" >
+				<span>Ver Producto</span>
+			</button>
+			`;
+			document.querySelector(".productosContainer").innerHTML += productoHTML;
+		}
+	});
+
+	const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
+	botonesComprar.forEach((boton) => {
+		boton.addEventListener("click", () => {
+			renderProductDetailsHTML(boton.dataset.idproducto);
+		});
+	});
+}
+
+function renderProductDetailsHTML(idProducto) {
+	const selectedProduct = sistema.listaProductos.find(
+		(producto) => producto.id === idProducto
+	);
+	if (!selectedProduct) {
+		console.error(`Producto con id ${idProducto} no encontrado`);
+		return;
+	}
+	renderSection = `
+	  <div class="productoDetailsContainer">
+		<div class="exitButtonDetailsContainer">
+		  <button class="exitButtonDetails">
+		  <span class="X"></span>
+		  <span class="Y"></span>
+		  <div class="close">Close</div>
+		  </button>
+		</div>
+		<h2 class="titleProductoDetails">${selectedProduct.nombre}</h2>
+		<div class="productoDetailsContainerImg">
+		  <img src="${selectedProduct.urlImagen}" alt="imagenRandome" />
+		</div>
+		<div class='spansContainerProductoDetails'>
+		  <span>${selectedProduct.descripcion}</span>    
+		  <div class="priceAndStockContainer">
+			<span class="priceProductoDetails">$ ${selectedProduct.precio}</span>
+			<span class="stockProductoDetails">Stock: ${selectedProduct.stock}</span>
+		  </div>
+		  <span class="ratingProductoDetails">${handleRating(
+				selectedProduct.rating
+			)}</span>
+		</div>
+		<div class="productoDetailsControlsContainer">
+		  <label>Cuantas unidades?<input type="number" min="1" id="btnSelectStockBuyer" placeholder="1" value="selectStock" /></label>
+		  <button class="CartBtn">
+	  <span class="IconContainer"> 
+		<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" fill="rgb(17, 17, 17)" class="cart"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+	  </span>
+	  <p class="text">Add to Cart</p>
+	</button>
+		</div>
+	  </div>
+	  `;
+
+	HTMLSECTION.innerHTML = renderSection;
+
+	addEventListenerSafely(
+		".exitButtonDetails",
+		"click",
+		isInSales ? renderSalesProductsHTML : renderContentHomeHTML
+	);
+	document.querySelectorAll(".CartBtn").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			handleAddProductToCart(selectedProduct);
+		});
+	});
+}
+
+function renderNavHTML() {
+	if (isAdmin) {
+		renderNavBar = `
+			<img
+					src="https://www.simicart.com/blog/wp-content/uploads/eCommerce-logo.jpg"
+					alt="Logo" />
+		<ul id="nav">
+		
+						<p>Opciones de administrador</p>
+						</ul>
+			`;
+	} else if (isComprador) {
+		renderNavBar = `
+			<img
+					src="https://www.simicart.com/blog/wp-content/uploads/eCommerce-logo.jpg"
+					alt="Logo" />
+		<ul class="navBarUser">
+			<li>
+				<span class="changeSectionToPurchaseHistory">Historial de compra</span>
+			</li>
+			<li>
+				<span class="buttonSectionChange">Ofertas</span>
+			</li>
+			<li>
+				<a class="signOut">Deslogearse</a>
+			</li>
+			
+		</ul>
+			`;
+	} else {
+		renderNavBar = "";
+	}
+
+	HTMLNAVBAR.innerHTML = renderNavBar;
+	document.querySelector(".signOut").addEventListener("click", () => {
+		handleSignOut();
+	});
+	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
+}
+
+function handleProductsView() {
+	if (isInSales) {
+		isInSales = false;
+		renderContentHomeHTML();
+	} else {
+		isInSales = true;
+		renderSalesProductsHTML();
+	}
+}
+
+function handleSignOut() {
+	isAdmin = false;
+	isComprador = false;
+	userLoged = "";
+	renderSection = "";
+	location.reload();
+}
+
+function handleLogin() {
+	let usuario = document.querySelector("#txtLoginUsuario").value.toLowerCase();
+	let pass = document.querySelector("#txtPass").value;
+
+	sistema.listaAdministradores.forEach((admin) => {
+		if (admin.usuario === usuario && admin.pass === pass) {
+			isAdmin = true;
+			userLoged = admin.usuario;
+			renderNavHTML();
+		}
+	});
+
+	if (!isAdmin) {
+		sistema.listaCompradores.forEach((comprador) => {
+			if (comprador.usuario === usuario && comprador.pass === pass) {
+				isComprador = true;
+				userLoged = comprador.usuario;
+				renderContentHomeHTML();
+				renderNavHTML();
+			}
+		});
+	}
+}
+
+function handleRegistrarComprador() {
 	let nombre = document.getElementById("txtNombre").value;
 	let apellido = document.getElementById("txtApellido").value;
 	let usuario = document.getElementById("txtUsuario").value.toLowerCase();
@@ -319,59 +480,59 @@ function registrarse() {
 	);
 
 	const formatoPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
-	//   const formatoTarjeta = /^(?:[0-9]{4}-){3}[0-9]{4}$/;
 	const formatoCvc = /^[0-9]{3}$/;
 
 	if (
 		sistema.esUsuarioUnico(usuario) &&
 		formatoPass.test(pass) &&
-		// formatoTarjeta.test(tarjeta) &&
 		formatoCvc.test(cvc)
 	) {
-		sistema.agregarComprador(nuevoComprador);
-		ocultarTodo();
-		document.querySelector("#loginSection").style.display = "block";
-		alert("registrado correctamente");
+		sistema.listaCompradores.push(nuevoComprador);
+		renderContentLoginHTML();
+		alert(
+			`registrado correctamente ${sistema.listaCompradores.length} usuarios`
+		);
 	} else if (!sistema.esUsuarioUnico(usuario)) {
 		alert("usuario ya registrado, debe usar otro username");
 	} else if (!formatoPass.test(pass)) {
 		alert(
 			"contraseña debe tener al menos 5 caracteres y poseer al menos una letra mayúscula, una minúscula y un número"
 		);
-		//   } else if (!formatoTarjeta.test(tarjeta)) {
-		//     alert("tarjeta invalida");
 	} else if (!formatoCvc.test(cvc)) {
 		alert("cvc invalida");
 	}
 }
 
-//regresar function
-document.querySelector("#btnVolver").addEventListener("click", () => {
-	ocultarTodo();
-	document.querySelector("#loginSection").style.display = "block";
-	document.querySelector("#txtLoginUsuario").value = "";
-	document.querySelector("#txtPass").value = "";
-});
+function handleAddProductToCart(selectedProduct) {
+	let selectedStock = Number(
+		document.querySelector("#btnSelectStockBuyer").value
+	);
 
-// Logout function
-document.querySelector("#deslogearseButton").addEventListener("click", () => {
-	if (!isBlocked) {
-		ocultarTodo();
-		document.querySelector("#loginSection").style.display = "block";
-		document.querySelector("#txtLoginUsuario").value = "";
-		document.querySelector("#txtPass").value = "";
-	}
-});
+	sistema.listaCompras.push(
+		new compra({
+			usuario: userLoged,
+			producto: selectedProduct,
+			precio: selectedProduct.precio,
+			howMany:
+				selectedStock == 0 || selectedStock === undefined
+					? (selectedStock = 1)
+					: selectedStock,
+		})
+	);
+	alert(`${sistema.listaCompras.length} compras agregadas`);
+}
 
-//PRODUCTOS DISPONIBLES SECCIÓN
-document.addEventListener("DOMContentLoaded", renderizarProductosDisponibles);
-
-function renderizarProductosDisponibles() {
-	const productosContainer = document.querySelector(".productosContainer");
-	productosContainer.innerHTML = "";
+function renderSalesProductsHTML() {
+	renderSection = `
+	<div>
+	<h2>Ofertas</h2>
+	<div class="productosEnOfertaContainer"></div>	
+	</div>
+	`;
+	HTMLSECTION.innerHTML = renderSection;
 
 	sistema.listaProductos.forEach((producto) => {
-		if (producto.stock > 0 && producto.isAvailable && !producto.isSale) {
+		if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
 			const productoHTML = `
       <div class="producto">
         <div class='img-container'>
@@ -397,220 +558,17 @@ function renderizarProductosDisponibles() {
 
    
     `;
-			productosContainer.innerHTML += productoHTML;
+			document.querySelector(".productosEnOfertaContainer").innerHTML +=
+				productoHTML;
 		}
 	});
 
 	const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
 	botonesComprar.forEach((boton) => {
 		boton.addEventListener("click", () => {
-			document.querySelector("#compraDeProductosSection").style.display =
-				"none";
-
-			showProductDetails(boton.dataset.idproducto);
+			renderProductDetailsHTML(boton.dataset.idproducto);
 		});
 	});
 }
 
-function showProductDetails(idProducto) {
-	isBlocked = true;
-	const productosDetailsSection = document.querySelector(
-		"#productoDetailsSection"
-	);
-	productosDetailsSection.classList.add("visibleEffect");
-
-	const selectedProduct = sistema.listaProductos.find(
-		(producto) => producto.id === idProducto
-	);
-	if (!selectedProduct) {
-		console.error(`Producto con id ${idProducto} no encontrado`);
-		return;
-	}
-
-	const productDetails = `
-  <div class="productoDetailsContainer">
-    <div class="exitButtonDetailsContainer">
-      <button class="exitButtonDetails">
-      <span class="X"></span>
-      <span class="Y"></span>
-      <div class="close">Close</div>
-      </button>
-    </div>
-    <h2 class="titleProductoDetails">${selectedProduct.nombre}</h2>
-    <div class="productoDetailsContainerImg">
-      <img src="${selectedProduct.urlImagen}" alt="imagenRandome" />
-    </div>
-    <div class='spansContainerProductoDetails'>
-      <span>${selectedProduct.descripcion}</span>    
-      <div class="priceAndStockContainer">
-        <span class="priceProductoDetails">$ ${selectedProduct.precio}</span>
-        <span class="stockProductoDetails">Stock: ${
-					selectedProduct.stock
-				}</span>
-      </div>
-      <span class="ratingProductoDetails">${handleRating(
-				selectedProduct.rating
-			)}</span>
-    </div>
-    <div class="productoDetailsControlsContainer">
-      <label>Cuantas unidades?<input type="number" min="1" id="btnSelectStockBuyer" placeholder="1" value="selectStock" /></label>
-      <button class="CartBtn">
-  <span class="IconContainer"> 
-    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" fill="rgb(17, 17, 17)" class="cart"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
-  </span>
-  <p class="text">Add to Cart</p>
-</button>
-    </div>
-  </div>
-  `;
-
-	productosDetailsSection.innerHTML = productDetails;
-
-	document
-		.querySelector(".productoDetailsContainer")
-		.classList.add("visibleEffect");
-
-	document.querySelector(".exitButtonDetails").addEventListener("click", () => {
-		document.querySelector(
-			` ${
-				isInSale ? "#compraDeProductosSection" : "#productosEnOfertaSection"
-			} `
-		).style.display = "block";
-		productosDetailsSection.classList.remove("visibleEffect");
-		isBlocked = false;
-		document
-			.querySelector(".productoDetailsContainer")
-			.classList.remove("visibleEffect");
-	});
-
-	//Add cart function
-
-	document.querySelectorAll(".CartBtn").forEach((btn) => {
-		btn.addEventListener("click", () => {
-			let selectedStock = Number(
-				document.querySelector("#btnSelectStockBuyer").value
-			);
-
-			sistema.listaCompras.push(
-				new compra({
-					usuario: userLoged,
-					producto: selectedProduct,
-					precio: selectedProduct.precio,
-					howMany:
-						selectedStock == 0 || selectedStock === undefined
-							? (selectedStock = 1)
-							: selectedStock,
-				})
-			);
-			alert(`${sistema.listaCompras.length} compras agregadas`);
-		});
-	});
-}
-
-///Function add product to cart
-
-//Function loged user data
-function showDataUser(userLoged) {
-	document.querySelector(
-		"#spanSaldo"
-	).innerHTML = `Hola ${userLoged.nombre}, su saldo es de:$${userLoged.saldo}`;
-}
-
-let isInSale = false;
-
-function productosEnOferta() {
-	const sectionProductosOferta = document.querySelector(
-		"#productosEnOfertaSection"
-	);
-	sectionProductosOferta.innerHTML = "";
-
-	sistema.listaProductos.forEach((producto) => {
-		if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
-			const productoHTML = `
-      <h2 style="">Productos en oferta</h2>
-      <div class="producto">
-        <div class='img-container'>
-          <img src="${producto.urlImagen}" alt="${producto.nombre}">
-          <div class="parrafoContainerProducto"> <p>$${
-						producto.precio
-					}</p></div>
-         
-        </div>
-        <div class="producto-info">
-          <h3>${producto.nombre}</h3>
-          <span class="ratingProducto">${handleRating(producto.rating)}</span>
-        </div>
-
-
-        <button  
-        type="button"
-        value="Ver producto"
-        class="btnComprarPruducto btn-shine "
-        data-idProducto="${producto.id}" >
-        <span>Ver Producto</span>
-    </button>
-
-   
-    `;
-			sectionProductosOferta.innerHTML += productoHTML;
-		}
-
-		const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
-		botonesComprar.forEach((boton) => {
-			boton.addEventListener("click", () => {
-				document.querySelector("#productosEnOfertaSection").style.display =
-					"none";
-
-				showProductDetails(boton.dataset.idproducto);
-			});
-		});
-	});
-}
-
-let isBlocked = false;
-
-function handleSectionProducts() {
-	isInSale = !isInSale;
-	if (isInSale && !isBlocked) {
-		document.querySelector(".buttonSectionChange").innerHTML = "Ver ofertas";
-		document.querySelector("#productosEnOfertaSection").style.display = "none";
-		document.querySelector("#compraDeProductosSection").style.display = "block";
-		renderizarProductosDisponibles();
-	} else if (!isBlocked) {
-		document.querySelector(".buttonSectionChange").innerHTML =
-			"Volver a inicio";
-		document.querySelector("#productosEnOfertaSection").style.display = "block";
-		document.querySelector("#compraDeProductosSection").style.display = "none";
-		productosEnOferta();
-	}
-}
-
-function listaDeCompras() {
-	const historialDeCompras = document.getElementById("SectionListaDeCompras");
-	historialDeCompras.innerHTML = "";
-	sistema.listaCompras.forEach((compra) => {
-		historialDeCompras.innerHTML += `
-	<div class="section-container">
-	<div class="order-list">
-	  <div class="order-item">
-		<img
-		  src="${compra.producto.urlImagen}"
-		  alt="Acme Wireless Headphones"
-		  width="80"
-		  height="80"
-		  class="order-image"
-		/>
-		<div class="order-info">
-		  <h3 class="order-title">${compra.producto.nombre}</h3>
-		  <p class="order-quantity">Quantity: 1</p>
-		</div>
-		<div class="order-price">$99.99</div>
-	  </div>
-	 
-`;
-	});
-
-	document.getElementById("compraDeProductosSection").style.display = "none";
-	document.getElementById("productosEnOfertaSection").style.display = "none";
-	document.getElementById("SectionListaDeCompras").style.display = "block";
-}
+const sistema = new Sistema();

@@ -3,106 +3,17 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
-		<link rel="stylesheet" href="css/obligatorio.css" />
+		<title>ObligatorioNew</title>
+		<link rel="stylesheet" href="/css/obligatorio.css" />
 	</head>
-
 	<body>
-		<header>
-			<img id="logo" src="https://p1.develotion.com/cart.jpg" alt="logo" />
-			<nav>
-				<ul id="navPrincipal">
-					<li>
-						<a id="menuAdminAdministrarProductos">Administrar Productos</a>
-					</li>
-					<li>
-						<a id="menuAdminListarCompras">Listar y aprobar Compras</a>
-					</li>
-					<li>
-						<a id="menuAdminProducto">Crear Producto</a>
-					</li>
-					<li>
-						<a id="menuAdminInforme">Ver informe</a>
-					</li>
-					<li>
-						<a id="menuAdminCerrarSesion">Cerrar sesión</a>
-					</li>
-				</ul>
-				<ul id="navPrincipalComprador">
-					<li>
-						<a id="changeSectionOrderList">Historial de compra</a>
-					</li>
-					<li id="changeSectionProductsButton">
-						<a class="buttonSectionChange"></a>
-					</li>
-					<li>
-						<a id="deslogearseButton">login</a>
-					</li>
-
-					<li><span id="spanSaldo"></span></li>
-				</ul>
-			</nav>
+		<header class="header">
+			<nav class="navBar" id="navContainer"></nav>
 		</header>
-
-		<!-- FIN CABEZAL -->
 		<main>
-			<section id="loginSection">
-				<h3>Login</h3>
-				<label for="txtLoginUsuario">Usuario</label>
-				<input type="text" id="txtLoginUsuario" />
-				<label for="txtPass">Contraseña</label>
-				<div class="btnsLoginContainer">
-					<input type="text" id="txtPass" />
-					<input type="button" value="Login" id="btnLogin" />
-				</div>
-				<input
-					type="button"
-					value="Registrar comprador"
-					id="btnRegistrarComprador" />
-			</section>
-
-			<section id="registroSection">
-				<h3>Registrar Usuario</h3>
-				<form class="formRegistro">
-					<div>
-						<label for="txtNombre">Nombre</label>
-						<input type="text" id="txtNombre" required /> <br />
-
-						<label for="txtApellido">Apellido</label>
-						<input type="text" id="txtApellido" required /> <br />
-
-						<label for="txtUsuario">Usuario</label>
-						<input type="text" id="txtUsuario" required /> <br />
-					</div>
-					<div>
-						<label for="txtContraseña">Contraseña</label>
-						<input type="text" id="txtContraseña" required /> <br />
-
-						<label for="txtTarjeta">Tarjeta</label>
-						<input type="text" id="txtTarjeta" required /> <br />
-
-						<label for="txtCvc">Cvc</label>
-						<input type="text" id="txtCvc" required /> <br />
-					</div>
-				</form>
-				<div class="buttonsContainerRegistro">
-					<input type="button" value="Volver" id="btnVolver" />
-					<input type="button" id="btnRegistrar" value="Registrar" />
-				</div>
-			</section>
-
-			<section id="compraDeProductosSection">
-				<h2>Productos disponibles</h2>
-				<div class="productosContainer"></div>
-			</section>
-
-			<section id="productoDetailsSection"></section>
-
-			<section id="productosEnOfertaSection"></section>
-
-			<section id="SectionListaDeCompras"></section>
+			<section id="SECTION"></section>
 		</main>
 
-		<script src="js/obligatorio.js"></script>
+		<script src="/js/obligatorio.js"></script>
 	</body>
 </html>
