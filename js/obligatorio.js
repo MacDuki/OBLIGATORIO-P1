@@ -427,6 +427,9 @@ function renderNavHTML() {
 		
 			<p>Opciones de administrador</p>
 			<li>
+			<a class="createProduct">Crear producto</a>
+			</li>
+			<li>
 				<a class="signOut">Deslogearse</a>
 			</li>
 		</ul>
@@ -473,6 +476,8 @@ function renderNavHTML() {
 		"click",
 		renderHistoryOfPurchasesHTML
 	);
+
+	addEventListenerSafely(".createProduct", "click", addNewItem);
 }
 
 function renderSalesProductsHTML() {
@@ -744,11 +749,12 @@ function handleRegistrarComprador() {
 		tarjeta,
 		cvc
 	);
-	let numeroTarjeta = document.getElementById("txtTarjeta").value;
-	let esTarjetaValida = handleAlgorithmLuhn(numeroTarjeta);
 
 	const formatoPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
 	const formatoCvc = /^[0-9]{3}$/;
+
+	let numeroTarjeta = document.getElementById("txtTarjeta").value;
+	let esTarjetaValida = validarTarjeta(numeroTarjeta);
 
 	if (
 		sistema.esUsuarioUnico(usuario) &&
@@ -770,6 +776,39 @@ function handleRegistrarComprador() {
 	} else if (!esTarjetaValida) {
 		alert("La tarjeta NO es válida");
 	}
+}
+
+function validarTarjeta(numeroTarjeta) {
+	let tarjetaValida = false;
+	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
+	let acumulador = 0;
+
+	for (let i = 0; i < numeroTarjeta.length - 1; i++) {
+		if (i % 2 === 0) {
+			let duplicado = Number(numeroTarjeta.charAt(i)) * 2;
+			if (duplicado >= 10) {
+				let duplicadoString = String(duplicado);
+				let resultado =
+					Number(duplicadoString.charAt(0)) + Number(duplicadoString.charAt(1));
+				acumulador += resultado;
+			} else {
+				acumulador += duplicado;
+			}
+		} else {
+			acumulador += Number(numeroTarjeta.charAt(i));
+		}
+	}
+
+	let multiplicadoPor9 = acumulador * 9;
+	let multiplicadoPor9String = String(multiplicadoPor9);
+	let digitoVerificador = multiplicadoPor9String.charAt(
+		multiplicadoPor9String.length - 1
+	);
+
+	if (digitoAVerificar === digitoVerificador) {
+		tarjetaValida = true;
+	}
+	return tarjetaValida;
 }
 
 function handleAddProductToCart(selectedProduct) {
@@ -880,6 +919,44 @@ function handleAlgorithmLuhn(numeroTarjeta) {
 		tarjetaValida = true;
 	}
 	return tarjetaValida;
+}
+
+function addNewItem() {
+	renderSection = `  <div id="createProductForm">
+    <label for="txtName">Nombre del producto:</label>
+    <input type="text" id="txtName" required>
+
+    <label for="productValue">Precio:</label>
+    <input type="number" id="productValue" min="0" required>
+
+    <label for="productDescription">Descripción:</label>
+    <input type="text" id="productDescription" required>
+
+    <label for="urlImage">URL de la Imagen:</label>
+    <input type="text" id="urlImage" required>
+
+    <label for="productStock">Cantidad de stock disponible:</label>
+    <input type="number" id="productStock" min="0" required>
+
+    <button class="btnForm">Crear Producto</button>
+  </div>
+`;
+	HTMLSECTION.innerHTML = renderSection;
+
+
+
+	document.querySelector(".btnForm").addEventListener("click", () => {
+		const name = document.getElementById("txtName").value;
+		const description = document.getElementById("productDescription").value;
+		const imageUrl = document.getElementById("urlImage").value;
+		const price = Number(document.getElementById("productValue").value);
+		const stock = Number(document.getElementById("productStock").value);
+
+		const newProduct = new Producto(name, description, imageUrl, price, stock);
+
+		sistema.listaProductos.push(newProduct);
+		alert(newProduct);
+	});
 }
 
 const sistema = new Sistema();
