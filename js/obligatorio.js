@@ -60,7 +60,7 @@ class Sistema {
 				"Raqueta de tenis ligera y resistente para jugadores avanzados.",
 				"https://t1.uc.ltmcdn.com/es/posts/6/9/5/tipos_de_deportes_con_raqueta_52596_orig.jpg",
 				120,
-				75
+				5
 			),
 			new Producto(
 				"Bicicleta de Montaña",
@@ -251,7 +251,7 @@ function addEventListenerSafely(selector, event, handler) {
 }
 
 function renderContentLoginHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 	<div>
 			<h2>Login</h2>
 			<label for="txtLoginUsuario">Usuario</label>
@@ -279,7 +279,7 @@ function renderContentLoginHTML() {
 }
 
 function renderContentRegistrarCompradorHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 	<div>
 	<h2>Registrar Usuario</h2>
 				<form class="formRegistro">
@@ -316,7 +316,7 @@ function renderContentRegistrarCompradorHTML() {
 }
 
 function renderContentHomeHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 				<div>
 				<h2>Home</h2>
 				<div class="productosContainer"></div>
@@ -368,7 +368,7 @@ function renderProductDetailsHTML(idProducto) {
 		console.error(`Producto con id ${idProducto} no encontrado`);
 		return;
 	}
-	renderSection = `
+	renderSection = /*html*/ `
 	  <div class="productoDetailsContainer">
 		<div class="exitButtonDetailsContainer">
 		  <button class="exitButtonDetails">
@@ -419,7 +419,7 @@ function renderProductDetailsHTML(idProducto) {
 
 function renderNavHTML() {
 	if (isAdmin) {
-		renderNavBar = `
+		renderNavBar = /*html*/ `
 			<img   class="img-logo"
 					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
 					alt="Logo" />
@@ -476,7 +476,7 @@ function renderNavHTML() {
 }
 
 function renderSalesProductsHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 	<div>
 	<h2>Ofertas</h2>
 	<div class="productosEnOfertaContainer"></div>	
@@ -525,7 +525,7 @@ function renderSalesProductsHTML() {
 }
 
 function renderHistoryOfPurchasesHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 	<div>
 	<h2>Historial de compra</h2>
 	<div class="historyOfPurchasesContainer"></div>
@@ -534,7 +534,9 @@ function renderHistoryOfPurchasesHTML() {
 	HTMLSECTION.innerHTML = renderSection;
 	sistema.listaCompras.forEach((compra) => {
 		if (compra.usuario === userLoged) {
-			document.querySelector(".historyOfPurchasesContainer").innerHTML += `
+			document.querySelector(
+				".historyOfPurchasesContainer"
+			).innerHTML += /*html*/ `
 	<div class="purchase-container">
 		<div class="order-list">
 			<div class="order-item">
@@ -561,7 +563,7 @@ function renderHistoryOfPurchasesHTML() {
 }
 
 function renderContentAdminListPurchasesHTML() {
-	renderSection = `
+	renderSection = /*html*/ `
 	<div class="adminHome"> 
 	<h2>Lista de compras</h2>
 	<div class="purchasesListsContainer">
@@ -584,7 +586,7 @@ function renderContentAdminListPurchasesHTML() {
 	);
 
 	sistema.listaCompras.forEach((compra) => {
-		purchaseHTML = `
+		purchaseHTML = /*html*/ `
 		<div class="purchase-container-admin">
 			<div class="order-list-admin">
 				<div class="order-item-admin">
@@ -622,7 +624,7 @@ function renderContentAdminListPurchasesHTML() {
 			const compra = sistema.listaCompras.filter(
 				(c) => c.status === "pendiente"
 			)[index];
-			container.innerHTML = `
+			container.innerHTML = /*html*/ `
 			<div class='btns-admin'>
 				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
 				<button class="btn-approve" ACTION_TO_DO="aprobar" id="${
@@ -641,7 +643,7 @@ function renderContentAdminListPurchasesHTML() {
 			const compra = sistema.listaCompras.filter(
 				(c) => c.status === "aprobada"
 			)[index];
-			container.innerHTML = `
+			container.innerHTML = /*html*/ `
 				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
 				<img alt='compra aprobada' src='/assets/comprobado-icon.svg' />
 			`;
@@ -653,7 +655,7 @@ function renderContentAdminListPurchasesHTML() {
 			const compra = sistema.listaCompras.filter(
 				(c) => c.status === "cancelada"
 			)[index];
-			container.innerHTML = `
+			container.innerHTML = /*html*/ `
 				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
 				<img alt='compra cancelada' src='/assets/cancelado-icon.svg' />
 			`;
@@ -810,9 +812,37 @@ function getRandomNumber() {
 
 function handleStatePurchases(id, actionToDo) {
 	const compra = sistema.listaCompras.find((compra) => compra.id === id);
+	const user = sistema.listaCompradores.find(
+		(comprador) => comprador.usuario === compra.usuario
+	);
+	const compraCost = compra.precio * compra.howMany;
+	const stock = compra.producto.stock;
+
 	if (compra) {
-		if (actionToDo === "aprobar") {
+		if (
+			actionToDo === "aprobar" &&
+			compraCost <= user.saldo &&
+			compra.howMany <= stock &&
+			compra.producto.isAvailable
+		) {
 			compra.status = "aprobada";
+			user.saldo -= compraCost;
+			compra.producto.stock -= compra.howMany;
+			alert(
+				`Compra aprobada ${compra.producto.nombre}, stock restante ${compra.producto.stock} y saldo restante ${user.saldo}`
+			);
+			if (stock === 0) {
+				compra.producto.isAvailable = false;
+			}
+		} else if (
+			(actionToDo === "aprobar" && !(compraCost <= user.saldo)) ||
+			!(compra.howMany <= stock) ||
+			!compra.producto.isAvailable
+		) {
+			compra.status = "cancelada";
+			alert(
+				"Compra cancelada porque o no hay stock o no tiene saldo o no está disponible"
+			);
 		} else if (actionToDo === "cancelar") {
 			compra.status = "cancelada";
 		}
