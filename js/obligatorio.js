@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 	renderContentLoginHTML();
+	renderNavHTML();
 });
 
 const HTMLNAVBAR = document.querySelector(".navBar");
@@ -185,28 +186,6 @@ class compra {
 	}
 }
 
-//function handle rating
-function getRandomNumber() {
-	return Math.floor(Math.random() * 5) + 1;
-}
-
-function handleRating(rating) {
-	switch (rating) {
-		case 1:
-			return "⭐ (1/5)";
-		case 2:
-			return "⭐⭐ (2/5)";
-		case 3:
-			return "⭐⭐⭐ (3/5)";
-		case 4:
-			return "⭐⭐⭐⭐ (4/5)";
-		case 5:
-			return "⭐⭐⭐⭐⭐ (5/5)";
-		default:
-			return "⭐⭐⭐⭐⭐⭐(6/5)";
-	}
-}
-
 function addEventListenerSafely(selector, event, handler) {
 	const element = document.querySelector(selector);
 	if (element) {
@@ -281,8 +260,8 @@ function renderContentRegistrarCompradorHTML() {
 
 function renderContentHomeHTML() {
 	renderSection = `
-	<div>
-				<h2>Productos disponibles</h2>
+				<div>
+				<h2>Home</h2>
 				<div class="productosContainer"></div>
 				</div>
 			`;
@@ -384,8 +363,8 @@ function renderProductDetailsHTML(idProducto) {
 function renderNavHTML() {
 	if (isAdmin) {
 		renderNavBar = `
-			<img
-					src="https://www.simicart.com/blog/wp-content/uploads/eCommerce-logo.jpg"
+			<img   class="img-logo"
+					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
 					alt="Logo" />
 		<ul id="nav">
 		
@@ -394,8 +373,8 @@ function renderNavHTML() {
 			`;
 	} else if (isComprador) {
 		renderNavBar = `
-			<img
-					src="https://www.simicart.com/blog/wp-content/uploads/eCommerce-logo.jpg"
+			<img	class="img-logo"
+					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
 					alt="Logo" />
 		<ul class="navBarUser">
 			<li>
@@ -411,7 +390,18 @@ function renderNavHTML() {
 		</ul>
 			`;
 	} else {
-		renderNavBar = "";
+		renderNavBar = `
+		<img	class="img-logo"
+				src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
+				alt="Logo" />
+	
+	
+			<span class="">Debe iniciar sesión :) </span>
+	
+		
+		
+
+		`;
 	}
 
 	HTMLNAVBAR.innerHTML = renderNavBar;
@@ -419,14 +409,107 @@ function renderNavHTML() {
 		handleSignOut();
 	});
 	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
+	addEventListenerSafely(
+		".changeSectionToPurchaseHistory",
+		"click",
+		renderHistoryOfPurchasesHTML
+	);
+}
+
+function renderSalesProductsHTML() {
+	renderSection = `
+	<div>
+	<h2>Ofertas</h2>
+	<div class="productosEnOfertaContainer"></div>	
+	</div>
+	`;
+	HTMLSECTION.innerHTML = renderSection;
+
+	sistema.listaProductos.forEach((producto) => {
+		if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
+			const productoHTML = `
+      <div class="producto">
+        <div class='img-container'>
+          <img src="${producto.urlImagen}" alt="${producto.nombre}">
+          <div class="parrafoContainerProducto"> <p>$${
+						producto.precio
+					}</p></div>
+         
+        </div>
+        <div class="producto-info">
+          <h3>${producto.nombre}</h3>
+          <span class="ratingProducto">${handleRating(producto.rating)}</span>
+        </div>
+
+
+        <button  
+        type="button"
+        value="Ver producto"
+        class="btnComprarPruducto btn-shine "
+        data-idProducto="${producto.id}" >
+        <span>Ver Producto</span>
+    </button>
+
+   
+    `;
+			document.querySelector(".productosEnOfertaContainer").innerHTML +=
+				productoHTML;
+		}
+	});
+
+	const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
+	botonesComprar.forEach((boton) => {
+		boton.addEventListener("click", () => {
+			renderProductDetailsHTML(boton.dataset.idproducto);
+		});
+	});
+}
+
+function renderHistoryOfPurchasesHTML() {
+	renderSection = `
+	<div>
+	<h2>Historial de compra</h2>
+	<div class="historyOfPurchasesContainer"></div>
+	</div>		
+	`;
+	HTMLSECTION.innerHTML = renderSection;
+	sistema.listaCompras.forEach((compra) => {
+		if (compra.usuario === userLoged) {
+			document.querySelector(".historyOfPurchasesContainer").innerHTML += `
+	<div class="purchase-container">
+		<div class="order-list">
+			<div class="order-item">
+				<img
+				src="${compra.producto.urlImagen}"
+				alt="${compra.producto.nombre}"
+				width="80"
+				height="80"
+				class="order-image"
+				/>
+			<div class="order-info">
+					<h3 class="order-title">${compra.producto.nombre}</h3>
+						<div class="order-price">$ ${compra.precio * compra.howMany}</div>
+					<p class="order-quantity">${compra.howMany} unidades</p>
+			</div>
+			<div class="order-status">
+				<span>Estado:</span>
+				<p>${compra.status}</p>
+			</div>
+	</div>
+`;
+		}
+	});
 }
 
 function handleProductsView() {
 	if (isInSales) {
 		isInSales = false;
+		document.querySelector(".buttonSectionChange").innerHTML = "Ofertas";
 		renderContentHomeHTML();
 	} else {
 		isInSales = true;
+		document.querySelector(".buttonSectionChange").innerHTML = "Home";
+
 		renderSalesProductsHTML();
 	}
 }
@@ -436,7 +519,8 @@ function handleSignOut() {
 	isComprador = false;
 	userLoged = "";
 	renderSection = "";
-	location.reload();
+	renderContentLoginHTML();
+	renderNavHTML();
 }
 
 function handleLogin() {
@@ -521,54 +605,25 @@ function handleAddProductToCart(selectedProduct) {
 	);
 	alert(`${sistema.listaCompras.length} compras agregadas`);
 }
+function handleRating(rating) {
+	switch (rating) {
+		case 1:
+			return "⭐ (1/5)";
+		case 2:
+			return "⭐⭐ (2/5)";
+		case 3:
+			return "⭐⭐⭐ (3/5)";
+		case 4:
+			return "⭐⭐⭐⭐ (4/5)";
+		case 5:
+			return "⭐⭐⭐⭐⭐ (5/5)";
+		default:
+			return "⭐⭐⭐⭐⭐⭐(6/5)";
+	}
+}
 
-function renderSalesProductsHTML() {
-	renderSection = `
-	<div>
-	<h2>Ofertas</h2>
-	<div class="productosEnOfertaContainer"></div>	
-	</div>
-	`;
-	HTMLSECTION.innerHTML = renderSection;
-
-	sistema.listaProductos.forEach((producto) => {
-		if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
-			const productoHTML = `
-      <div class="producto">
-        <div class='img-container'>
-          <img src="${producto.urlImagen}" alt="${producto.nombre}">
-          <div class="parrafoContainerProducto"> <p>$${
-						producto.precio
-					}</p></div>
-         
-        </div>
-        <div class="producto-info">
-          <h3>${producto.nombre}</h3>
-          <span class="ratingProducto">${handleRating(producto.rating)}</span>
-        </div>
-
-
-        <button  
-        type="button"
-        value="Ver producto"
-        class="btnComprarPruducto btn-shine "
-        data-idProducto="${producto.id}" >
-        <span>Ver Producto</span>
-    </button>
-
-   
-    `;
-			document.querySelector(".productosEnOfertaContainer").innerHTML +=
-				productoHTML;
-		}
-	});
-
-	const botonesComprar = document.querySelectorAll(".btnComprarPruducto");
-	botonesComprar.forEach((boton) => {
-		boton.addEventListener("click", () => {
-			renderProductDetailsHTML(boton.dataset.idproducto);
-		});
-	});
+function getRandomNumber() {
+	return Math.floor(Math.random() * 5) + 1;
 }
 
 const sistema = new Sistema();
