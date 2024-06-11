@@ -51,7 +51,8 @@ button {
 	border-radius: 20px;
 }
 
-input[type="button"]:hover {
+input[type="button"]:hover,
+button:hover {
 	cursor: pointer;
 	scale: 1.05;
 	color: #ffffff;
@@ -82,6 +83,7 @@ main {
 	display: flex;
 	align-items: start;
 	justify-content: center;
+	width: 90%;
 }
 
 /*NAVBAR SECTION*/
@@ -91,7 +93,8 @@ main {
 	justify-content: center;
 	padding: 10px 10px;
 }
-.navBarUser li {
+.navBarUser li,
+.navBarAdmin li {
 	list-style: none;
 	padding: 10px 10px;
 	cursor: pointer;
@@ -99,7 +102,8 @@ main {
 	text-transform: uppercase;
 }
 
-.navBarUser li:hover {
+.navBarUser li:hover,
+.navBarAdmin li:hover {
 	scale: 1.05;
 	font-weight: bold;
 	text-decoration: underline;
@@ -630,7 +634,8 @@ main {
 	font-weight: 500;
 }
 
-.order-quantity {
+.order-quantity,
+.order-user {
 	color: #6b7280;
 	font-size: 0.875rem;
 }
@@ -644,4 +649,67 @@ main {
 	font-weight: bolder;
 	text-transform: uppercase;
 	margin-top: 1rem;
+}
+
+.purchasesListsContainer {
+	display: flex;
+	gap: 1rem;
+}
+.purchasesPendingList,
+.purchasesApprovedList,
+.purchasesCancelList {
+	width: 33%;
+}
+
+.parrafo-tittle-admin-container {
+	font-size: 1.2rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	text-decoration: underline rgba(22, 75, 167, 0.935) dashed;
+	text-align: center;
+}
+
+.adminHome {
+	width: 100%;
+}
+.purchase-container-admin {
+	margin-bottom: 0.5rem;
+}
+.order-item-admin {
+	display: flex;
+	flex-direction: row;
+	border: 1px solid #4a5a70;
+	border-radius: 30px;
+	padding: 0.5rem 0.5rem;
+	align-items: center;
+	justify-content: space-between;
+}
+.order-item-admin img {
+	border-radius: 50%;
+}
+.order-info-admin {
+	text-align: center;
+}
+.btns-admin {
+	margin-left: 0.7rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.btn-approve {
+	margin-bottom: 0.5rem;
+}
+
+.order-status-admin-aprobada,
+.order-status-admin-cancelada {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.order-status-admin-aprobada img,
+.order-status-admin-cancelada img {
+	width: 50px;
 }

@@ -116,7 +116,57 @@ class Sistema {
 				80
 			),
 		];
-		this.listaCompras = [];
+		this.listaCompras = [
+			new compra({
+				usuario: "fran123",
+				precio: 100,
+				howMany: 1,
+				status: "pendiente",
+				producto: this.listaProductos[0],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 80,
+				howMany: 100,
+				status: "pendiente",
+				producto: this.listaProductos[1],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 80,
+				howMany: 100,
+				status: "pendiente",
+				producto: this.listaProductos[8],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 80,
+				howMany: 100,
+				status: "pendiente",
+				producto: this.listaProductos[7],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 80,
+				howMany: 100,
+				status: "pendiente",
+				producto: this.listaProductos[6],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 8,
+				howMany: 5,
+				status: "cancelada",
+				producto: this.listaProductos[2],
+			}),
+			new compra({
+				usuario: "alberto123",
+				precio: 800,
+				howMany: 10,
+				status: "aprobada",
+				producto: this.listaProductos[5],
+			}),
+		];
 	}
 
 	esUsuarioUnico(usuario) {
@@ -183,8 +233,9 @@ class Producto {
 }
 
 class compra {
+	static ultimoId = 0;
 	constructor({ usuario, precio, howMany, status = "pendiente", producto }) {
-		this.usuario = usuario;
+		(this.id = `${++compra.ultimoId}`), (this.usuario = usuario);
 		this.precio = precio;
 		this.howMany = Number(howMany);
 		this.status = status;
@@ -372,10 +423,13 @@ function renderNavHTML() {
 			<img   class="img-logo"
 					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
 					alt="Logo" />
-		<ul id="nav">
+		<ul class="navBarAdmin">
 		
-						<p>Opciones de administrador</p>
-						</ul>
+			<p>Opciones de administrador</p>
+			<li>
+				<a class="signOut">Deslogearse</a>
+			</li>
+		</ul>
 			`;
 	} else if (isComprador) {
 		renderNavBar = `
@@ -411,9 +465,8 @@ function renderNavHTML() {
 	}
 
 	HTMLNAVBAR.innerHTML = renderNavBar;
-	document.querySelector(".signOut").addEventListener("click", () => {
-		handleSignOut();
-	});
+
+	addEventListenerSafely(".signOut", "click", handleSignOut);
 	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
 	addEventListenerSafely(
 		".changeSectionToPurchaseHistory",
@@ -507,6 +560,120 @@ function renderHistoryOfPurchasesHTML() {
 	});
 }
 
+function renderContentAdminListPurchasesHTML() {
+	renderSection = `
+	<div class="adminHome"> 
+	<h2>Lista de compras</h2>
+	<div class="purchasesListsContainer">
+	<div class="purchasesPendingList"><p class="parrafo-tittle-admin-container">Compras pendientes</p></div>
+	<div class="purchasesApprovedList"><p class="parrafo-tittle-admin-container">Compras aprobadas</p></div>
+	<div class="purchasesCancelList"><p class="parrafo-tittle-admin-container">Compras canceladas</p></div>
+	</div>
+	</div>
+	`;
+	HTMLSECTION.innerHTML = renderSection;
+	let purchaseHTML = "";
+	const HTMLpurchasesPendingList = document.querySelector(
+		".purchasesPendingList"
+	);
+	const HTMLpurchasesApprovedList = document.querySelector(
+		".purchasesApprovedList"
+	);
+	const HTMLpurchasesCancelList = document.querySelector(
+		".purchasesCancelList"
+	);
+
+	sistema.listaCompras.forEach((compra) => {
+		purchaseHTML = `
+		<div class="purchase-container-admin">
+			<div class="order-list-admin">
+				<div class="order-item-admin">
+					<img
+						src="${compra.producto.urlImagen}"
+						alt="${compra.producto.nombre}"
+						width="80"
+						height="80"
+						class="order-image-admin"
+					/>
+					<div class="order-info-admin">
+						<h3 class="order-title">${compra.producto.nombre}</h3>
+						<p class="order-quantity">${compra.howMany} unidades</p>
+						<p class="order-user">Usuario: ${compra.usuario}</p>
+					</div>
+					<div class="order-status-admin-${compra.status}">
+					</div>
+				</div>
+			</div>
+		</div>
+		`;
+
+		if (compra.status === "pendiente") {
+			HTMLpurchasesPendingList.innerHTML += purchaseHTML;
+		} else if (compra.status === "aprobada") {
+			HTMLpurchasesApprovedList.innerHTML += purchaseHTML;
+		} else {
+			HTMLpurchasesCancelList.innerHTML += purchaseHTML;
+		}
+	});
+
+	document
+		.querySelectorAll(".order-status-admin-pendiente")
+		.forEach((container, index) => {
+			const compra = sistema.listaCompras.filter(
+				(c) => c.status === "pendiente"
+			)[index];
+			container.innerHTML = `
+			<div class='btns-admin'>
+				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
+				<button class="btn-approve" ACTION_TO_DO="aprobar" id="${
+					compra.id
+				}">Aprobar</button>
+				<button class="btn-cancel" ACTION_TO_DO="cancelar" id="${
+					compra.id
+				}">Cancelar</button>
+			</div>
+		`;
+		});
+
+	document
+		.querySelectorAll(".order-status-admin-aprobada")
+		.forEach((container, index) => {
+			const compra = sistema.listaCompras.filter(
+				(c) => c.status === "aprobada"
+			)[index];
+			container.innerHTML = `
+				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
+				<img alt='compra aprobada' src='/assets/comprobado-icon.svg' />
+			`;
+		});
+
+	document
+		.querySelectorAll(".order-status-admin-cancelada")
+		.forEach((container, index) => {
+			const compra = sistema.listaCompras.filter(
+				(c) => c.status === "cancelada"
+			)[index];
+			container.innerHTML = `
+				<div class="order-price">$ ${compra.precio * compra.howMany}</div>
+				<img alt='compra cancelada' src='/assets/cancelado-icon.svg' />
+			`;
+		});
+
+	document.querySelectorAll(".btn-approve").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const compraId = btn.id;
+			handleStatePurchases(compraId, "aprobar");
+		});
+	});
+
+	document.querySelectorAll(".btn-cancel").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const compraId = btn.id;
+			handleStatePurchases(compraId, "cancelar");
+		});
+	});
+}
+
 function handleProductsView() {
 	if (isInSales) {
 		isInSales = false;
@@ -538,18 +705,25 @@ function handleLogin() {
 			isAdmin = true;
 			userLoged = admin.usuario;
 			renderNavHTML();
+			renderContentAdminListPurchasesHTML();
+		} else if (admin.usuario === usuario && admin.pass !== pass) {
+			alert("contraseña incorrecta");
 		}
 	});
 
 	if (!isAdmin) {
 		sistema.listaCompradores.forEach((comprador) => {
-			if (comprador.usuario === usuario && comprador.pass === pass) {
+			if (comprador.usuario == usuario && comprador.pass == pass) {
 				isComprador = true;
 				userLoged = comprador.usuario;
 				renderContentHomeHTML();
 				renderNavHTML();
 			}
 		});
+	}
+
+	if (!isComprador && !isAdmin) {
+		alert("Datos incorrectos");
 	}
 }
 
@@ -568,6 +742,8 @@ function handleRegistrarComprador() {
 		tarjeta,
 		cvc
 	);
+	let numeroTarjeta = document.getElementById("txtTarjeta").value;
+	let esTarjetaValida = handleAlgorithmLuhn(numeroTarjeta);
 
 	const formatoPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
 	const formatoCvc = /^[0-9]{3}$/;
@@ -582,10 +758,8 @@ function handleRegistrarComprador() {
 		esTarjetaValida
 	) {
 		sistema.listaCompradores.push(nuevoComprador);
+		alert("Usuario registrado correctamente");
 		renderContentLoginHTML();
-		alert(
-			`registrado correctamente ${sistema.listaCompradores.length} usuarios`
-		);
 	} else if (!sistema.esUsuarioUnico(usuario)) {
 		alert("usuario ya registrado, debe usar otro username");
 	} else if (!formatoPass.test(pass)) {
@@ -648,7 +822,6 @@ function handleAddProductToCart(selectedProduct) {
 					: selectedStock,
 		})
 	);
-	alert(`${sistema.listaCompras.length} compras agregadas`);
 }
 function handleRating(rating) {
 	switch (rating) {
@@ -669,6 +842,50 @@ function handleRating(rating) {
 
 function getRandomNumber() {
 	return Math.floor(Math.random() * 5) + 1;
+}
+
+function handleStatePurchases(id, actionToDo) {
+	const compra = sistema.listaCompras.find((compra) => compra.id === id);
+	if (compra) {
+		if (actionToDo === "aprobar") {
+			compra.status = "aprobada";
+		} else if (actionToDo === "cancelar") {
+			compra.status = "cancelada";
+		}
+		renderContentAdminListPurchasesHTML();
+	}
+}
+function handleAlgorithmLuhn(numeroTarjeta) {
+	let tarjetaValida = false;
+	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
+	let acumulador = 0;
+
+	for (let i = 0; i < numeroTarjeta.length - 1; i++) {
+		if (i % 2 === 0) {
+			let duplicado = Number(numeroTarjeta.charAt(i)) * 2;
+			if (duplicado >= 10) {
+				let duplicadoString = String(duplicado);
+				let resultado =
+					Number(duplicadoString.charAt(0)) + Number(duplicadoString.charAt(1));
+				acumulador += resultado;
+			} else {
+				acumulador += duplicado;
+			}
+		} else {
+			acumulador += Number(numeroTarjeta.charAt(i));
+		}
+	}
+
+	let multiplicadoPor9 = acumulador * 9;
+	let multiplicadoPor9String = String(multiplicadoPor9);
+	let digitoVerificador = multiplicadoPor9String.charAt(
+		multiplicadoPor9String.length - 1
+	);
+
+	if (digitoAVerificar === digitoVerificador) {
+		tarjetaValida = true;
+	}
+	return tarjetaValida;
 }
 
 const sistema = new Sistema();
