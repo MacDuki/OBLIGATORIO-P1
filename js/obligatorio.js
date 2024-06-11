@@ -125,6 +125,12 @@ class Sistema {
 				return false;
 			}
 		}
+
+		for (let admin of this.listaAdministradores) {
+			if (admin.usuario === usuario) {
+				return false;
+			}
+		}
 		return true;
 	}
 }
@@ -566,10 +572,14 @@ function handleRegistrarComprador() {
 	const formatoPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
 	const formatoCvc = /^[0-9]{3}$/;
 
+	let numeroTarjeta = document.getElementById("txtTarjeta").value;
+	let esTarjetaValida = validarTarjeta(numeroTarjeta); 
+
 	if (
 		sistema.esUsuarioUnico(usuario) &&
 		formatoPass.test(pass) &&
-		formatoCvc.test(cvc)
+		formatoCvc.test(cvc) &&
+		esTarjetaValida
 	) {
 		sistema.listaCompradores.push(nuevoComprador);
 		renderContentLoginHTML();
@@ -584,7 +594,42 @@ function handleRegistrarComprador() {
 		);
 	} else if (!formatoCvc.test(cvc)) {
 		alert("cvc invalida");
+	} else if (!esTarjetaValida) {
+		alert("La tarjeta NO es válida");
 	}
+}
+
+function validarTarjeta(numeroTarjeta) {
+	let tarjetaValida = false;
+	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
+	let acumulador = 0;
+
+	for (let i = 0; i < numeroTarjeta.length - 1; i++) {
+		if (i % 2 === 0) {
+			let duplicado = Number(numeroTarjeta.charAt(i)) * 2;
+			if (duplicado >= 10) {
+				let duplicadoString = String(duplicado);
+				let resultado =
+					Number(duplicadoString.charAt(0)) + Number(duplicadoString.charAt(1));
+				acumulador += resultado;
+			} else {
+				acumulador += duplicado;
+			}
+		} else {
+			acumulador += Number(numeroTarjeta.charAt(i));
+		}
+	}
+
+	let multiplicadoPor9 = acumulador * 9;
+	let multiplicadoPor9String = String(multiplicadoPor9);
+	let digitoVerificador = multiplicadoPor9String.charAt(
+		multiplicadoPor9String.length - 1
+	);
+
+	if (digitoAVerificar === digitoVerificador) {
+		tarjetaValida = true;
+	}
+	return tarjetaValida;
 }
 
 function handleAddProductToCart(selectedProduct) {
