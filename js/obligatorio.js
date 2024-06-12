@@ -510,10 +510,17 @@ function renderHistoryOfPurchasesHTML() {
 			<div class="order-status">
 				<span>Estado:</span>
 				<p>${compra.status}</p>
+				<button class="btnChangeStatusToCanceled" data-compra-id="${
+					compra.id
+				}">Cancelar producto</button>
 			</div>
 	</div>
 `;
 		}
+	});
+	const cancelButtons = document.querySelectorAll(".btnChangeStatusToCanceled");
+	cancelButtons.forEach((button) => {
+		button.addEventListener("click", handleCancelPurchase);
 	});
 }
 
@@ -891,3 +898,14 @@ function addNewItem() {
 }
 
 const sistema = new Sistema();
+
+function handleCancelPurchase(event) {
+	const compraId = event.target.dataset.compraId;
+	const compraIndex = sistema.listaCompras.findIndex((c) => c.id === compraId);
+	if (compraIndex !== -1) {
+		sistema.listaCompras[compraIndex].status = "cancelado";
+		sistema.listaCompras.splice(compraIndex, 1);
+		renderHistoryOfPurchasesHTML();
+	}
+}
+
