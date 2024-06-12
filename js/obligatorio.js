@@ -363,6 +363,11 @@ function renderProductDetailsHTML(idProducto) {
 	document.querySelectorAll(".CartBtn").forEach((btn) => {
 		btn.addEventListener("click", () => {
 			handleAddProductToCart(selectedProduct);
+			renderPopUpHTML(
+				"Compra agregada",
+				`La compra de ${selectedProduct.nombre} se ha agregado correctamente a la lista.`,
+				isInSales ? renderSalesProductsHTML : renderContentHomeHTML
+			);
 		});
 	});
 }
@@ -374,10 +379,14 @@ function renderNavHTML() {
 					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
 					alt="Logo" />
 		<ul class="navBarAdmin">
-		
-			<p>Opciones de administrador</p>
 			<li>
-			<a class="createProduct">Crear producto</a>
+				<a class="createProduct">Ver informe de ganancias</a>
+			</li>
+			<li>
+				<a class="createProduct">Administrar productos</a>
+			</li>
+			<li>
+				<a class="createProduct">Crear producto</a>
 			</li>
 			<li>
 				<a class="signOut">Deslogearse</a>
@@ -517,19 +526,20 @@ function renderHistoryOfPurchasesHTML() {
 	});
 }
 
-function renderPopUpHTML(advise, isGood) {
+function renderPopUpHTML(tittle, advise, returnFunction) {
 	renderSection = /*html*/ `
 	<div class="popUp">
-		<img class="popUp-icon" src="/assets/alert-icon.svg" />
-			<div class="popUp-content">
-				<div class="popUp-title">${advise}</div>
-				<div class="popUp-text">
-					<p>${advise}</p>
-				</div>
-			</div>
+		<div class="popUp-exitButton-container">
+			<img class="popUp-exitButton" src="/assets/cancelado-icon.svg" />
+		</div>
+		<div class="popUp-content">
+			<h3 class="popUp-title">${tittle}</h3>
+			<p>${advise}</p>
+		</div>
 	</div>
 	`;
-	HTMLSECTION.innerHTML += renderSection;
+	HTMLSECTION.innerHTML = renderSection;
+	addEventListenerSafely(".popUp-exitButton", "click", returnFunction);
 }
 
 function renderContentAdminListPurchasesHTML() {
@@ -671,31 +681,58 @@ function handleSignOut() {
 function handleLogin() {
 	let usuario = document.querySelector("#txtLoginUsuario").value.toLowerCase();
 	let pass = document.querySelector("#txtPass").value;
+	let userFound = false;
+	isAdmin = false;
+	isComprador = false;
 
 	sistema.listaAdministradores.forEach((admin) => {
-		if (admin.usuario === usuario && admin.pass === pass) {
-			isAdmin = true;
-			userLoged = admin.usuario;
-			renderNavHTML();
-			renderContentAdminListPurchasesHTML();
-		} else if (admin.usuario === usuario && admin.pass !== pass) {
-			alert("contraseña incorrecta");
+		if (admin.usuario === usuario) {
+			userFound = true;
+			if (admin.pass === pass) {
+				isAdmin = true;
+				userLoged = admin.usuario;
+				renderNavHTML();
+				renderContentAdminListPurchasesHTML();
+				return;
+			} else {
+				renderPopUpHTML(
+					"Datos incorrectos",
+					"La contraseña ingresada no es correcta para ingresar como administrador",
+					renderContentLoginHTML
+				);
+				return;
+			}
 		}
 	});
 
 	if (!isAdmin) {
 		sistema.listaCompradores.forEach((comprador) => {
-			if (comprador.usuario == usuario && comprador.pass == pass) {
-				isComprador = true;
-				userLoged = comprador.usuario;
-				renderContentHomeHTML();
-				renderNavHTML();
+			if (comprador.usuario === usuario) {
+				userFound = true;
+				if (comprador.pass === pass) {
+					isComprador = true;
+					userLoged = comprador.usuario;
+					renderNavHTML();
+					renderContentHomeHTML();
+					return;
+				} else {
+					renderPopUpHTML(
+						"Datos incorrectos",
+						`La contraseña ingresada no es correcta para ingresar como el usuario ${comprador.usuario}`,
+						renderContentLoginHTML
+					);
+					return;
+				}
 			}
 		});
 	}
 
-	if (!isComprador && !isAdmin) {
-		alert("Datos incorrectos");
+	if (!userFound) {
+		renderPopUpHTML(
+			"Datos incorrectos",
+			`El usuario: ${usuario} no existe`,
+			renderContentLoginHTML
+		);
 	}
 }
 
@@ -728,18 +765,35 @@ function handleRegistrarComprador() {
 		esTarjetaValida
 	) {
 		sistema.listaCompradores.push(nuevoComprador);
-		alert("Usuario registrado correctamente");
-		renderContentLoginHTML();
+		renderPopUpHTML(
+			"Usuario registrado correctamente",
+			`El usuario: ${nuevoComprador.usuario} se ha registrado correctamente.`,
+			renderContentLoginHTML
+		);
 	} else if (!sistema.esUsuarioUnico(usuario)) {
-		alert("usuario ya registrado, debe usar otro username");
+		renderPopUpHTML(
+			"Fallo al registrar usuario",
+			`El usuario: ${usuario} ya existe, debe usar otro username.`,
+			renderContentRegistrarCompradorHTML
+		);
 	} else if (!formatoPass.test(pass)) {
-		alert(
-			"contraseña debe tener al menos 5 caracteres y poseer al menos una letra mayúscula, una minúscula y un número"
+		renderPopUpHTML(
+			"Fallo al registrar usuario",
+			`La contraseña ingresada no es valida, debe tener al menos 5 caracteres y poseer al menos una letra mayúscula, una minúscula y un número.`,
+			renderContentRegistrarCompradorHTML
 		);
 	} else if (!formatoCvc.test(cvc)) {
-		alert("cvc invalida");
+		renderPopUpHTML(
+			"Fallo al registrar usuario",
+			`El código de verificación de la tarjeta no es válido.`,
+			renderContentRegistrarCompradorHTML
+		);
 	} else if (!esTarjetaValida) {
-		alert("La tarjeta NO es válida");
+		renderPopUpHTML(
+			"Fallo al registrar usuario",
+			`La tarjeta ingresada no es válida.`,
+			renderContentRegistrarCompradorHTML
+		);
 	}
 }
 
@@ -760,6 +814,7 @@ function handleAddProductToCart(selectedProduct) {
 		})
 	);
 }
+
 function handleRating(rating) {
 	switch (rating) {
 		case 1:
@@ -799,8 +854,10 @@ function handleStatePurchases(id, actionToDo) {
 			compra.status = "aprobada";
 			user.saldo -= compraCost;
 			compra.producto.stock -= compra.howMany;
-			alert(
-				`Compra aprobada ${compra.producto.nombre}, stock restante ${compra.producto.stock} y saldo restante ${user.saldo}`
+			renderPopUpHTML(
+				"Compra aprobada",
+				`La compra de ${compra.producto.nombre} ha sido aprobada, stock restante ${compra.producto.stock} y saldo restante del usario ${user.usuario} es:$ ${user.saldo}`,
+				renderContentAdminListPurchasesHTML
 			);
 			if (stock === 0) {
 				compra.producto.isAvailable = false;
@@ -811,13 +868,32 @@ function handleStatePurchases(id, actionToDo) {
 			!compra.producto.isAvailable
 		) {
 			compra.status = "cancelada";
-			alert(
-				"Compra cancelada porque o no hay stock o no tiene saldo o no está disponible"
+
+			let reasons = [];
+
+			if (!(compraCost <= user.saldo)) {
+				reasons.push("no tiene saldo suficiente");
+			}
+
+			if (!(compra.howMany <= stock)) {
+				reasons.push("no hay suficiente stock");
+			}
+
+			if (!compra.producto.isAvailable) {
+				reasons.push("el producto no está disponible");
+			}
+
+			let reasonsText = reasons.join(", ");
+
+			renderPopUpHTML(
+				"Compra cancelada",
+				`La compra de ${compra.producto.nombre} no se ha aprobado porque ${reasonsText}.`,
+				renderContentAdminListPurchasesHTML
 			);
 		} else if (actionToDo === "cancelar") {
 			compra.status = "cancelada";
+			renderContentAdminListPurchasesHTML();
 		}
-		renderContentAdminListPurchasesHTML();
 	}
 }
 

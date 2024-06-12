@@ -87,7 +87,8 @@ main {
 }
 
 /*NAVBAR SECTION*/
-.navBarUser {
+.navBarUser,
+.navBarAdmin {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -712,4 +713,44 @@ main {
 .order-status-admin-aprobada img,
 .order-status-admin-cancelada img {
 	width: 50px;
+}
+
+.popUp {
+	position: absolute;
+	width: 300px;
+	height: 200px;
+	background-color: rgba(22, 75, 167, 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 100;
+	flex-direction: column;
+	border-radius: 4%;
+	padding: 1rem;
+}
+
+.popUp-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 1rem;
+	flex-direction: column;
+}
+
+.popUp-exitButton-container {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.popUp-exitButton {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+	transition: all 0.2s linear;
+}
+.popUp-exitButton:hover {
+	cursor: pointer;
+	scale: 1.2;
 }
