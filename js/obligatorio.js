@@ -116,57 +116,7 @@ class Sistema {
 				80
 			),
 		];
-		this.listaCompras = [
-			new compra({
-				usuario: "fran123",
-				precio: 100,
-				howMany: 1,
-				status: "pendiente",
-				producto: this.listaProductos[0],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 80,
-				howMany: 100,
-				status: "pendiente",
-				producto: this.listaProductos[1],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 80,
-				howMany: 100,
-				status: "pendiente",
-				producto: this.listaProductos[8],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 80,
-				howMany: 100,
-				status: "pendiente",
-				producto: this.listaProductos[7],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 80,
-				howMany: 100,
-				status: "pendiente",
-				producto: this.listaProductos[6],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 8,
-				howMany: 5,
-				status: "cancelada",
-				producto: this.listaProductos[2],
-			}),
-			new compra({
-				usuario: "alberto123",
-				precio: 800,
-				howMany: 10,
-				status: "aprobada",
-				producto: this.listaProductos[5],
-			}),
-		];
+		this.listaCompras = [];
 	}
 
 	esUsuarioUnico(usuario) {
@@ -567,6 +517,21 @@ function renderHistoryOfPurchasesHTML() {
 	});
 }
 
+function renderPopUpHTML(advise, isGood) {
+	renderSection = /*html*/ `
+	<div class="popUp">
+		<img class="popUp-icon" src="/assets/alert-icon.svg" />
+			<div class="popUp-content">
+				<div class="popUp-title">${advise}</div>
+				<div class="popUp-text">
+					<p>${advise}</p>
+				</div>
+			</div>
+	</div>
+	`;
+	HTMLSECTION.innerHTML += renderSection;
+}
+
 function renderContentAdminListPurchasesHTML() {
 	renderSection = /*html*/ `
 	<div class="adminHome"> 
@@ -754,7 +719,7 @@ function handleRegistrarComprador() {
 	const formatoCvc = /^[0-9]{3}$/;
 
 	let numeroTarjeta = document.getElementById("txtTarjeta").value;
-	let esTarjetaValida = validarTarjeta(numeroTarjeta);
+	let esTarjetaValida = handleAlgorithmLuhn(numeroTarjeta);
 
 	if (
 		sistema.esUsuarioUnico(usuario) &&
@@ -776,39 +741,6 @@ function handleRegistrarComprador() {
 	} else if (!esTarjetaValida) {
 		alert("La tarjeta NO es válida");
 	}
-}
-
-function validarTarjeta(numeroTarjeta) {
-	let tarjetaValida = false;
-	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
-	let acumulador = 0;
-
-	for (let i = 0; i < numeroTarjeta.length - 1; i++) {
-		if (i % 2 === 0) {
-			let duplicado = Number(numeroTarjeta.charAt(i)) * 2;
-			if (duplicado >= 10) {
-				let duplicadoString = String(duplicado);
-				let resultado =
-					Number(duplicadoString.charAt(0)) + Number(duplicadoString.charAt(1));
-				acumulador += resultado;
-			} else {
-				acumulador += duplicado;
-			}
-		} else {
-			acumulador += Number(numeroTarjeta.charAt(i));
-		}
-	}
-
-	let multiplicadoPor9 = acumulador * 9;
-	let multiplicadoPor9String = String(multiplicadoPor9);
-	let digitoVerificador = multiplicadoPor9String.charAt(
-		multiplicadoPor9String.length - 1
-	);
-
-	if (digitoAVerificar === digitoVerificador) {
-		tarjetaValida = true;
-	}
-	return tarjetaValida;
 }
 
 function handleAddProductToCart(selectedProduct) {
@@ -888,6 +820,7 @@ function handleStatePurchases(id, actionToDo) {
 		renderContentAdminListPurchasesHTML();
 	}
 }
+
 function handleAlgorithmLuhn(numeroTarjeta) {
 	let tarjetaValida = false;
 	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
@@ -942,8 +875,6 @@ function addNewItem() {
   </div>
 `;
 	HTMLSECTION.innerHTML = renderSection;
-
-
 
 	document.querySelector(".btnForm").addEventListener("click", () => {
 		const name = document.getElementById("txtName").value;
