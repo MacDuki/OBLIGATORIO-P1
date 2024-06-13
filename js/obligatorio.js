@@ -322,34 +322,40 @@ function renderAdministrateProductsHTML() {
 	sistema.listaProductos.forEach((producto) => {
 		const productoHTML = `
 		<div class="productAdminView">
-			<div class='imgContainerAdminView'>
+			<div class='imgContainerAdminView' >
 				<img src="${producto.urlImagen}" class="imgAdminProduct" alt="${
 			producto.nombre
 		}">
-				<div class="parrafoContainerProducto"> <p>$${producto.precio}</p></div>
+				<div class="parrafoContainerProducto" id="parrafoContainerProductoAdmin"> <p>$${
+					producto.precio
+				}</p></div>
 			</div>
-			<div class="producto-info">
-				<h3>${producto.nombre}</h3>
-				<span class="ratingProducto">${handleRating(producto.rating)}</span>
-				<div>
-					<span class="stockProductoDetails+">Stock actual: ${producto.stock}</span>
+			<div class="producto-info" id="producto-info-admin">
+				<h3 id="producto-title-admin">${producto.nombre}</h3>
+				<div id="producto-description-admin">
+					<span class="stockProductoDetails" id="stockProductoDetails-admin">Stock actual: ${
+						producto.stock
+					}</span>
 					<p>Ingresar nuevo stock</p>
 					<input type="number" id="stock" min="0" value="${producto.stock}" />
 				</div>
-				<legend class="isAvilable"> Disponible? <input type="checkbox" id="isAvilable" ${
+				<legend class="isAvilable"> Disponible? <input type="checkbox" class="check" id="isAvilable" ${
 					producto.isAvailable ? "checked" : ""
 				} /></legend>
-				<legend class="isSale"> Está en oferta? <input type="checkbox" id="isSale" checked= ${
+				<legend class="isSale"> Está en oferta? <input type="checkbox" class="check" id="isSale" checked= ${
 					producto.isSale
 				} /></legend>
 			</div>
-			<button  
+			<div class="btnsAdminActualizePoroduct">
+			<button
+				id="btn-update-producto-admin"
 				type="button"
 				value="Ver producto"
 				class="btnComprarPruducto btn-shine "
 				data-idProducto="${producto.id}" >
 				<span>Actualizar <br/> producto</span>
 			</button>
+			</div>
 		</div>
 			`;
 		document.querySelector(".productsContainerAdminView").innerHTML +=
@@ -586,18 +592,34 @@ function renderHistoryOfPurchasesHTML() {
 
 function renderPopUpHTML(tittle, advise, returnFunction) {
 	renderSection = /*html*/ `
-	<div class="popUp">
-		<div class="popUp-exitButton-container">
-			<img class="popUp-exitButton" src="/assets/cancelado-icon.svg" />
-		</div>
-		<div class="popUp-content">
-			<h3 class="popUp-title">${tittle}</h3>
-			<p>${advise}</p>
-		</div>
-	</div>
-	`;
+	<div class="dot-spinner">
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+</div>		
+		`;
 	HTMLSECTION.innerHTML = renderSection;
-	addEventListenerSafely(".popUp-exitButton", "click", returnFunction);
+
+	setTimeout(() => {
+		renderSection = /*html*/ `
+		<div class="popUp">
+			<div class="popUp-exitButton-container">
+				<img class="popUp-exitButton" src="/assets/cancelado-icon.svg" />
+			</div>
+			<div class="popUp-content">
+				<h3 class="popUp-title">${tittle}</h3>
+				<p>${advise}</p>
+			</div>
+		</div>
+		`;
+		HTMLSECTION.innerHTML = renderSection;
+		addEventListenerSafely(".popUp-exitButton", "click", returnFunction);
+	}, 700);
 }
 
 function renderContentAdminListPurchasesHTML() {
