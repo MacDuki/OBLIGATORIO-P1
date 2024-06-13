@@ -8,6 +8,12 @@ body {
 	user-select: none;
 }
 
+h2 {
+	font-size: 2rem;
+	text-align: center;
+	text-transform: uppercase;
+}
+
 .navBar {
 	max-width: 100%;
 	height: 70px;
@@ -585,9 +591,9 @@ main {
 	text-align: center;
 	border: 1px solid rgb(0, 0, 0);
 	margin: 1rem;
-	border-radius: 50rem;
+	border-radius: 2rem;
 	padding: 0 3rem;
-	height: 7rem;
+	height: 9rem;
 }
 
 .text-container {
@@ -753,4 +759,28 @@ main {
 .popUp-exitButton:hover {
 	cursor: pointer;
 	scale: 1.2;
+}
+
+.productsContainerAdminView {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.productAdminView {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #000000;
+}
+
+.imgContainerAdminView {
+	width: 150px;
+	height: 150px;
+}
+.imgAdminProduct {
+	width: 150px;
+	height: 150px;
 }

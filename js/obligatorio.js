@@ -38,7 +38,84 @@ class Sistema {
 				"185"
 			),
 		];
-		this.listaProductos = [];
+		this.listaProductos = [
+			new Producto(
+				"Guantes de boxeo",
+				"Este es el producto 1 y su descripción de guantes de boxeo",
+				"https://m.media-amazon.com/images/I/51esH1W-asL._AC_UF1000,1000_QL80_.jpg",
+				99,
+				200,
+				false
+			),
+			new Producto(
+				"Pelota de Fútbol",
+				"Pelota de fútbol profesional de alta calidad.",
+				"https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/%D0%A4%D0%9A_%22%D0%9A%D0%BE%D0%BB%D0%BE%D1%81%22_%28%D0%97%D0%B0%D1%87%D0%B5%D0%BF%D0%B8%D0%BB%D0%BE%D0%B2%D0%BA%D0%B0%2C_%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_-_%D0%A4%D0%9A_%22%D0%91%D0%B0%D0%BB%D0%BA%D0%B0%D0%BD%D1%8B%22_%28%D0%97%D0%B0%D1%80%D1%8F%2C_%D0%9E%D0%B4%D0%B5%D1%81%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_%2818790931100%29.jpg/800px-thumbnail.jpg",
+				35,
+				150,
+				false
+			),
+			new Producto(
+				"Raqueta de Tenis",
+				"Raqueta de tenis ligera y resistente para jugadores avanzados.",
+				"https://t1.uc.ltmcdn.com/es/posts/6/9/5/tipos_de_deportes_con_raqueta_52596_orig.jpg",
+				120,
+				5
+			),
+			new Producto(
+				"Bicicleta de Montaña",
+				"Bicicleta de montaña con suspensión total y frenos de disco.",
+				"https://chedrauimx.vtexassets.com/arquivos/ids/30669159-800-auto?v=638518189250000000&width=800&height=auto&aspect=true",
+				450,
+				30
+			),
+			new Producto(
+				"Guantes de mama",
+				"Guantes de boxeo de cuero con relleno extra para mayor protección.",
+				"https://m.media-amazon.com/images/I/71gGKDXdoPL._AC_UF1000,1000_QL80_.jpg",
+				85,
+				200,
+				true,
+				true
+			),
+			new Producto(
+				"Zapatillas para Correr",
+				"Zapatillas ligeras y cómodas diseñadas para maratones.",
+				"https://www.hola.com/us/images/0275-1520a8373d35-1d24cebc0cf6-1000/horizontal-1200/balenciaga-zapatillas.jpg",
+				60,
+				100,
+				true,
+				true
+			),
+			new Producto(
+				"Pesas Ajustables",
+				"Juego de pesas ajustables con incrementos de 2.5 kg.",
+				"https://m.media-amazon.com/images/I/71CxDTwx03L._AC_UF894,1000_QL80_.jpg",
+				150,
+				50
+			),
+			new Producto(
+				"Casco de Ciclismo",
+				"Casco de ciclismo aerodinámico con ventilación mejorada.",
+				"https://images.ecestaticos.com/oRpsnZZrRBfcZAzDhIseaACvYFk=/1x151:999x659/1440x810/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fbd5%2Fa89%2Fc26%2Fbd5a89c26e32422bc1677edcdf1579e6.jpg",
+				45,
+				120
+			),
+			new Producto(
+				"Traje de Neopreno",
+				"Traje de neopreno de 3mm ideal para deportes acuáticos.",
+				"https://contents.mediadecathlon.com/p1554251/k$9dd3c3eebf92602ef08663c0bd20cd6a/neopreno-surf-hombre-agua-fria-4slash3mm-negro.jpg?format=auto&quality=40&f=800x800",
+				180,
+				25
+			),
+			new Producto(
+				"Saco de Dormir",
+				"Saco de dormir ultraligero para acampada y senderismo.",
+				"https://http2.mlstatic.com/D_NQ_NP_889663-MLU73954308613_012024-O.webp",
+				70,
+				80
+			),
+		];
 		this.listaCompras = [];
 	}
 
@@ -233,6 +310,53 @@ function renderContentHomeHTML() {
 	});
 }
 
+function renderAdministrateProductsHTML() {
+	renderSection = /*html*/ `
+	<div>
+		<h2>Administrar productos</h2>
+		<div class="productsContainerAdminView"></div>
+	</div>
+	`;
+	HTMLSECTION.innerHTML = renderSection;
+
+	sistema.listaProductos.forEach((producto) => {
+		const productoHTML = `
+		<div class="productAdminView">
+			<div class='imgContainerAdminView'>
+				<img src="${producto.urlImagen}" class="imgAdminProduct" alt="${
+			producto.nombre
+		}">
+				<div class="parrafoContainerProducto"> <p>$${producto.precio}</p></div>
+			</div>
+			<div class="producto-info">
+				<h3>${producto.nombre}</h3>
+				<span class="ratingProducto">${handleRating(producto.rating)}</span>
+				<div>
+					<span class="stockProductoDetails+">Stock actual: ${producto.stock}</span>
+					<p>Ingresar nuevo stock</p>
+					<input type="number" id="stock" min="0" value="${producto.stock}" />
+				</div>
+				<legend class="isAvilable"> Disponible? <input type="checkbox" id="isAvilable" ${
+					producto.isAvailable ? "checked" : ""
+				} /></legend>
+				<legend class="isSale"> Está en oferta? <input type="checkbox" id="isSale" checked= ${
+					producto.isSale
+				} /></legend>
+			</div>
+			<button  
+				type="button"
+				value="Ver producto"
+				class="btnComprarPruducto btn-shine "
+				data-idProducto="${producto.id}" >
+				<span>Actualizar <br/> producto</span>
+			</button>
+		</div>
+			`;
+		document.querySelector(".productsContainerAdminView").innerHTML +=
+			productoHTML;
+	});
+}
+
 function renderProductDetailsHTML(idProducto) {
 	const selectedProduct = sistema.listaProductos.find(
 		(producto) => producto.id === idProducto
@@ -303,10 +427,10 @@ function renderNavHTML() {
 					alt="Logo" />
 		<ul class="navBarAdmin">
 			<li>
-				<a class="createProduct">Ver informe de ganancias</a>
+				<a class="viewRevenueReport">Ver informe de ganancias</a>
 			</li>
 			<li>
-				<a class="createProduct">Administrar productos</a>
+				<a class="administrateProducts">Administrar productos</a>
 			</li>
 			<li>
 				<a class="createProduct">Crear producto</a>
@@ -358,8 +482,12 @@ function renderNavHTML() {
 		"click",
 		renderHistoryOfPurchasesHTML
 	);
-
-	addEventListenerSafely(".createProduct", "click", handleAddNewProductAdmin);
+	addEventListenerSafely(
+		".administrateProducts",
+		"click",
+		renderAdministrateProductsHTML
+	);
+	addEventListenerSafely(".createProduct", "click", renderAddNewProductAdmin);
 }
 
 function renderSalesProductsHTML() {
@@ -860,40 +988,59 @@ function handleAlgorithmLuhn(numeroTarjeta) {
 	return tarjetaValida;
 }
 
-function handleAddNewProductAdmin() {
-	renderSection = `  <div id="createProductForm">
-    <label for="txtName">Nombre del producto:</label>
-    <input type="text" id="txtName" required>
+function renderAddNewProductAdmin() {
+	renderSection = `
+    <div id="createProductForm">
+        <label for="txtName">Nombre del producto:</label>
+        <input type="text" id="txtName" required>
 
-    <label for="productValue">Precio:</label>
-    <input type="number" id="productValue" min="0" required>
+        <label for="productValue">Precio:</label>
+        <input type="number" id="productValue" min="0" required>
 
-    <label for="productDescription">Descripción:</label>
-    <input type="text" id="productDescription" required>
+        <label for="productDescription">Descripción:</label>
+        <input type="text" id="productDescription" required>
 
-    <label for="urlImage">URL de la Imagen:</label>
-    <input type="text" id="urlImage" required>
+        <label for="urlImage">Url de la Imagen:</label>
+        <input type="text" id="urlImage" required>
 
-    <label for="productStock">Cantidad de stock disponible:</label>
-    <input type="number" id="productStock" min="0" required>
+        <label for="productStock">Cantidad de stock disponible:</label>
+        <input type="number" id="productStock" min="0" required>
 
-    <button class="btnForm">Crear Producto</button>
-  </div>
-`;
+        <button class="btnForm">Crear Producto</button>
+    </div>
+    `;
 	HTMLSECTION.innerHTML = renderSection;
 
-	document.querySelector(".btnForm").addEventListener("click", () => {
-		const name = document.getElementById("txtName").value;
-		const description = document.getElementById("productDescription").value;
-		const imageUrl = document.getElementById("urlImage").value;
-		const price = Number(document.getElementById("productValue").value);
-		const stock = Number(document.getElementById("productStock").value);
+	addEventListenerSafely(".btnForm", "click", handleAddNewProductAdmin);
+}
 
-		const newProduct = new Producto(name, description, imageUrl, price, stock);
+function handleAddNewProductAdmin() {
+	const name = document.getElementById("txtName").value.trim();
+	const description = document
+		.getElementById("productDescription")
+		.value.trim();
+	const imageUrl = document.getElementById("urlImage").value.trim();
+	const price = Number(document.getElementById("productValue").value);
+	const stock = Number(document.getElementById("productStock").value);
 
-		sistema.listaProductos.push(newProduct);
-		alert(newProduct);
-	});
+	if (!name || !description || !imageUrl || price <= 0 || stock <= 0) {
+		renderPopUpHTML(
+			"Error",
+			"Por favor, complete todos los campos y asegúrese de que el precio y el stock sean mayores a 0.",
+			renderAddNewProductAdmin
+		);
+		return;
+	}
+
+	const newProduct = new Producto(name, description, imageUrl, price, stock);
+
+	sistema.listaProductos.push(newProduct);
+
+	renderPopUpHTML(
+		"Producto creado",
+		`Se ha creado un nuevo producto : ${newProduct.nombre} `,
+		renderAddNewProductAdmin
+	);
 }
 
 function handleCancelPurchase(event) {
