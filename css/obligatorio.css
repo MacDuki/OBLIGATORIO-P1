@@ -317,6 +317,10 @@ main {
 	position: relative;
 }
 
+h3 {
+	margin-top: 0;
+}
+
 .btn-shine span {
 	z-index: 20;
 }
@@ -352,20 +356,12 @@ main {
 	transition: opacity 2s ease, height 2s ease;
 }
 
-#productoDetailsSection.visibleEffect {
-	opacity: 1;
-	height: 90vh;
-	width: 100%;
-	max-height: 90vh;
+.productoDetailsContainerPreview {
+	height: 400px !important;
 }
-
-.productoDetailsContainer.visibleEffect {
-	opacity: 1;
-	width: 310px;
-	height: 460px;
-	max-height: 500px;
+#productPreview {
+	margin-left: 1rem;
 }
-
 .productoDetailsContainerImg {
 	width: auto;
 	height: auto;
