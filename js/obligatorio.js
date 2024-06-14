@@ -13,6 +13,7 @@ let isComprador = false;
 let isInSales = false;
 let contadorAdministradores = 1;
 let contadorCompradores = 1;
+let isNightMode = false;
 
 class Sistema {
 	constructor() {
@@ -193,13 +194,103 @@ class compra {
 	}
 }
 
+/*COMMON------------------------------------------*/
+
 function addEventListenerSafely(selector, event, handler) {
 	const element = document.querySelector(selector);
 	if (element) {
 		element.addEventListener(event, handler);
 	}
 }
+function renderNavHTML() {
+	if (isAdmin) {
+		renderNavBar = /*html*/ `
+			<img   class="img-logo"
+					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
+					alt="Logo" />
+		<ul class="navBarAdmin">
+			<li>
+				<a class="viewRevenueReport">Ver informe de ganancias</a>
+			</li>
+			<li>
+				<a class="administrateProducts">Administrar productos</a>
+			</li>
+			<li>
+				<a class="createProduct">Crear producto</a>
+			</li>
+			<li>
+				<a class="signOut">Deslogearse</a>
+			</li>
+			
+		</ul>
+			`;
 
+		HTMLNAVBAR.innerHTML = renderNavBar;
+	} else if (isComprador) {
+		renderNavBar = `
+			<img	class="img-logo"
+					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
+					alt="Logo" />
+		<ul class="navBarUser">
+			<li>
+				<span class="changeSectionToPurchaseHistory">Historial de compra</span>
+			</li>
+			<li>
+				<span class="buttonSectionChange">Ofertas</span>
+			</li>
+			<li>
+				<a class="signOut">Deslogearse</a>
+			</li>
+		
+		</ul>
+			`;
+
+		HTMLNAVBAR.innerHTML = renderNavBar;
+	} else {
+		renderNavBar = `
+		<img	class="img-logo"
+				src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
+				alt="Logo" />
+	
+	
+			<span class="">Debe iniciar sesión :) </span>
+
+
+
+
+					<label>
+		<input class="toggle-checkbox"  type="checkbox" ${isNightMode ? "checked" : ""}>
+		<div class="toggle-slot">
+			<div class="sun-icon-wrapper">
+			<div class="iconify sun-icon" data-icon="feather-sun" data-inline="false"></div>
+			</div>
+			<div class="toggle-button"></div>
+			<div class="moon-icon-wrapper">
+			<div class="iconify moon-icon" data-icon="feather-moon" data-inline="false"></div>
+			</div>
+		</div>
+		</label>
+		`;
+		HTMLNAVBAR.innerHTML = renderNavBar;
+		document
+			.querySelector(".toggle-checkbox")
+			.addEventListener("change", handleNightMode);
+	}
+	addEventListenerSafely(".viewRevenueReport", "click", handleProfit);
+	addEventListenerSafely(".signOut", "click", handleSignOut);
+	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
+	addEventListenerSafely(
+		".changeSectionToPurchaseHistory",
+		"click",
+		renderHistoryOfPurchasesHTML
+	);
+	addEventListenerSafely(
+		".administrateProducts",
+		"click",
+		renderAdministrateProductsHTML
+	);
+	addEventListenerSafely(".createProduct", "click", renderAddNewProductAdmin);
+}
 function renderContentLoginHTML() {
 	renderSection = /*html*/ `
 	<div>
@@ -227,6 +318,39 @@ function renderContentLoginHTML() {
 
 	addEventListenerSafely("#btnLogin", "click", handleLogin);
 }
+function renderPopUpHTML(tittle, advise, returnFunction) {
+	renderSection = /*html*/ `
+	<div class="dot-spinner">
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+</div>		
+		`;
+	HTMLSECTION.innerHTML = renderSection;
+
+	setTimeout(() => {
+		renderSection = /*html*/ `
+		<div class="popUp">
+			<div class="popUp-exitButton-container">
+				<img class="popUp-exitButton" src="/assets/cancelado-icon.svg" />
+			</div>
+			<div class="popUp-content">
+				<h3 class="popUp-title">${tittle}</h3>
+				<p>${advise}</p>
+			</div>
+		</div>
+		`;
+		HTMLSECTION.innerHTML = renderSection;
+		addEventListenerSafely(".popUp-exitButton", "click", returnFunction);
+	}, 700);
+}
+
+/*USER--------------------------------------------*/
 
 function renderContentRegistrarCompradorHTML() {
 	renderSection = /*html*/ `
@@ -264,12 +388,11 @@ function renderContentRegistrarCompradorHTML() {
 	addEventListenerSafely("#btnVolver", "click", renderContentLoginHTML);
 	addEventListenerSafely("#btnRegistrar", "click", handleRegistrarComprador);
 }
-
 function renderContentHomeHTML() {
 	renderSection = /*html*/ `
 				<div>
 				<h2>Home</h2>
-				<div class="productosContainer"></div>
+				<div class="productosContainer  ${isNightMode ? "nightMode" : ""}"></div>
 				</div>
 			`;
 
@@ -309,70 +432,12 @@ function renderContentHomeHTML() {
 		});
 	});
 }
-
-function renderAdministrateProductsHTML() {
-	renderSection = /*html*/ `
-	<div>
-		<h2>Administrar productos</h2>
-		<div class="productsContainerAdminView"></div>
-	</div>
-	`;
-	HTMLSECTION.innerHTML = renderSection;
-
-	sistema.listaProductos.forEach((producto) => {
-		const productoHTML = `
-		<div class="productAdminView">
-			<div class='imgContainerAdminView' >
-				<img src="${producto.urlImagen}" class="imgAdminProduct" alt="${
-			producto.nombre
-		}">
-				<div class="parrafoContainerProducto" id="parrafoContainerProductoAdmin"> <p>$${
-					producto.precio
-				}</p></div>
-			</div>
-			<div class="producto-info" id="producto-info-admin">
-				<h3 id="producto-title-admin">${producto.nombre}</h3>
-				<div id="producto-description-admin">
-					<span class="stockProductoDetails" id="stockProductoDetails-admin">Stock actual: ${
-						producto.stock
-					}</span>
-					<p>Ingresar nuevo stock</p>
-					<input type="number" id="stock" min="0" value="${producto.stock}" />
-				</div>
-				<legend class="isAvilable"> Disponible? <input type="checkbox" class="check" id="isAvilable" ${
-					producto.isAvailable ? "checked" : ""
-				} /></legend>
-				<legend class="isSale"> Está en oferta? <input type="checkbox" class="check" id="isSale" checked= ${
-					producto.isSale
-				} /></legend>
-			</div>
-			<div class="btnsAdminActualizePoroduct">
-			<button
-				id="btn-update-producto-admin"
-				type="button"
-				value="Ver producto"
-				class="btnComprarPruducto btn-shine "
-				data-idProducto="${producto.id}" >
-				<span>Actualizar <br/> producto</span>
-			</button>
-			</div>
-		</div>
-			`;
-		document.querySelector(".productsContainerAdminView").innerHTML +=
-			productoHTML;
-	});
-}
-
 function renderProductDetailsHTML(idProducto) {
 	const selectedProduct = sistema.listaProductos.find(
 		(producto) => producto.id === idProducto
 	);
-	if (!selectedProduct) {
-		console.error(`Producto con id ${idProducto} no encontrado`);
-		return;
-	}
 	renderSection = /*html*/ `
-	  <div class="productoDetailsContainer">
+	  <div class="productoDetailsContainer ${isNightMode ? "nightMode" : ""}">
 		<div class="exitButtonDetailsContainer">
 		  <button class="exitButtonDetails">
 		  <span class="X"></span>
@@ -424,78 +489,6 @@ function renderProductDetailsHTML(idProducto) {
 		});
 	});
 }
-
-function renderNavHTML() {
-	if (isAdmin) {
-		renderNavBar = /*html*/ `
-			<img   class="img-logo"
-					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
-					alt="Logo" />
-		<ul class="navBarAdmin">
-			<li>
-				<a class="viewRevenueReport">Ver informe de ganancias</a>
-			</li>
-			<li>
-				<a class="administrateProducts">Administrar productos</a>
-			</li>
-			<li>
-				<a class="createProduct">Crear producto</a>
-			</li>
-			<li>
-				<a class="signOut">Deslogearse</a>
-			</li>
-		</ul>
-			`;
-	} else if (isComprador) {
-		renderNavBar = `
-			<img	class="img-logo"
-					src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
-					alt="Logo" />
-		<ul class="navBarUser">
-			<li>
-				<span class="changeSectionToPurchaseHistory">Historial de compra</span>
-			</li>
-			<li>
-				<span class="buttonSectionChange">Ofertas</span>
-			</li>
-			<li>
-				<a class="signOut">Deslogearse</a>
-			</li>
-			
-		</ul>
-			`;
-	} else {
-		renderNavBar = `
-		<img	class="img-logo"
-				src="https://www.creativefabrica.com/wp-content/uploads/2022/06/21/Fitness-Sale-Icon-Gym-Shop-Logo-Design-Graphics-32726026-2-580x386.jpg"
-				alt="Logo" />
-	
-	
-			<span class="">Debe iniciar sesión :) </span>
-	
-		
-		
-
-		`;
-	}
-
-	HTMLNAVBAR.innerHTML = renderNavBar;
-
-	addEventListenerSafely(".signOut", "click", handleSignOut);
-	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
-	addEventListenerSafely(
-		".changeSectionToPurchaseHistory",
-		"click",
-		renderHistoryOfPurchasesHTML
-	);
-	addEventListenerSafely(
-		".administrateProducts",
-		"click",
-		renderAdministrateProductsHTML
-	);
-	addEventListenerSafely(".createProduct", "click", renderAddNewProductAdmin);
-}
-
 function renderSalesProductsHTML() {
 	renderSection = /*html*/ `
 	<div>
@@ -508,7 +501,7 @@ function renderSalesProductsHTML() {
 	sistema.listaProductos.forEach((producto) => {
 		if (producto.stock > 0 && producto.isAvailable && producto.isSale) {
 			const productoHTML = `
-      <div class="producto">
+      <div class="producto ${isNightMode ? "nightMode" : ""}">
         <div class='img-container'>
           <img src="${producto.urlImagen}" alt="${producto.nombre}">
           <div class="parrafoContainerProducto"> <p>$${
@@ -544,7 +537,6 @@ function renderSalesProductsHTML() {
 		});
 	});
 }
-
 function renderHistoryOfPurchasesHTML() {
 	renderSection = /*html*/ `
 	<div>
@@ -590,38 +582,62 @@ function renderHistoryOfPurchasesHTML() {
 	});
 }
 
-function renderPopUpHTML(tittle, advise, returnFunction) {
+/*ADMIN ----------------------------------------*/
+
+function renderAdministrateProductsHTML() {
 	renderSection = /*html*/ `
-	<div class="dot-spinner">
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-    <div class="dot-spinner__dot"></div>
-</div>		
-		`;
+	<div>
+		<h2>Administrar productos</h2>
+		<div class="productsContainerAdminView"></div>
+	</div>
+	`;
 	HTMLSECTION.innerHTML = renderSection;
 
-	setTimeout(() => {
-		renderSection = /*html*/ `
-		<div class="popUp">
-			<div class="popUp-exitButton-container">
-				<img class="popUp-exitButton" src="/assets/cancelado-icon.svg" />
+	sistema.listaProductos.forEach((producto) => {
+		const productoHTML = `
+		<div class="productAdminView ">
+			<div class='imgContainerAdminView' >
+				<img src="${producto.urlImagen}" class="imgAdminProduct ${producto.nombre}">
+				<div class="parrafoContainerProducto" id="parrafoContainerProductoAdmin"> <p>$${
+					producto.precio
+				}</p></div>
 			</div>
-			<div class="popUp-content">
-				<h3 class="popUp-title">${tittle}</h3>
-				<p>${advise}</p>
+			<div class="producto-info" id="producto-info-admin">
+				<h3 id="producto-title-admin" class="${isNightMode ? "nightModeWhite" : ""}">${
+			producto.nombre
+		}</h3>
+				<div id="producto-description-admin">
+					<span class="stockProductoDetails ${
+						isNightMode ? "nightModeWhite" : ""
+					}" id="stockProductoDetails-admin">Stock actual: ${
+			producto.stock
+		}</span>
+					<p>Ingresar nuevo stock</p>
+					<input type="number" id="stock" min="0" value="${producto.stock}" />
+				</div>
+				<legend class="isAvilable"> Disponible? <input type="checkbox" class="check" id="isAvilable" ${
+					producto.isAvailable ? "checked" : ""
+				} /></legend>
+				<legend class="isSale"> Está en oferta? <input type="checkbox" class="check" id="isSale" checked= ${
+					producto.isSale
+				} /></legend>
+			</div>
+			<div class="btnsAdminActualizePoroduct">
+			<button
+				id="btn-update-producto-admin"
+				type="button"
+				value="Ver producto"
+				class="btnComprarPruducto btn-shine "
+				data-idProducto="${producto.id}" >
+				<span>Actualizar <br/> producto</span>
+			</button>
 			</div>
 		</div>
-		`;
-		HTMLSECTION.innerHTML = renderSection;
-		addEventListenerSafely(".popUp-exitButton", "click", returnFunction);
-	}, 700);
+			`;
+		document.querySelector(".productsContainerAdminView").innerHTML +=
+			productoHTML;
+	});
 }
-
 function renderContentAdminListPurchasesHTML() {
 	renderSection = /*html*/ `
 	<div class="adminHome"> 
@@ -735,6 +751,33 @@ function renderContentAdminListPurchasesHTML() {
 		});
 	});
 }
+function renderAddNewProductAdmin() {
+	renderSection = `
+    <div id="createProductForm">
+        <label for="txtName">Nombre del producto:</label>
+        <input type="text" id="txtName" required>
+
+        <label for="productValue">Precio:</label>
+        <input type="number" id="productValue" min="0" required>
+
+        <label for="productDescription">Descripción:</label>
+        <input type="text" id="productDescription" required>
+
+        <label for="urlImage">Url de la Imagen:</label>
+        <input type="text" id="urlImage" required>
+
+        <label for="productStock">Cantidad de stock disponible:</label>
+        <input type="number" id="productStock" min="0" required>
+
+        <button class="btnForm">Crear Producto</button>
+    </div>
+    `;
+	HTMLSECTION.innerHTML = renderSection;
+
+	addEventListenerSafely(".btnForm", "click", handleAddNewProductAdmin);
+}
+
+/*HANDLES --------------------------------------*/
 
 function handleProductsView() {
 	if (isInSales) {
@@ -748,7 +791,6 @@ function handleProductsView() {
 		renderSalesProductsHTML();
 	}
 }
-
 function handleSignOut() {
 	isAdmin = false;
 	isComprador = false;
@@ -757,7 +799,6 @@ function handleSignOut() {
 	renderContentLoginHTML();
 	renderNavHTML();
 }
-
 function handleLogin() {
 	let usuario = document.querySelector("#txtLoginUsuario").value.toLowerCase();
 	let pass = document.querySelector("#txtPass").value;
@@ -815,7 +856,6 @@ function handleLogin() {
 		);
 	}
 }
-
 function handleRegistrarComprador() {
 	let nombre = document.getElementById("txtNombre").value;
 	let apellido = document.getElementById("txtApellido").value;
@@ -876,7 +916,6 @@ function handleRegistrarComprador() {
 		);
 	}
 }
-
 function handleAddProductToCart(selectedProduct) {
 	let selectedStock = Number(
 		document.querySelector("#btnSelectStockBuyer").value
@@ -894,7 +933,6 @@ function handleAddProductToCart(selectedProduct) {
 		})
 	);
 }
-
 function handleRating(rating) {
 	switch (rating) {
 		case 1:
@@ -911,11 +949,17 @@ function handleRating(rating) {
 			return "⭐⭐⭐⭐⭐⭐(6/5)";
 	}
 }
-
+function handleNightMode() {
+	isNightMode = !isNightMode;
+	if (isNightMode) {
+		document.body.style.cssText = "background-color: #211e1e; color: #cecece;";
+	} else {
+		document.body.style.cssText = "";
+	}
+}
 function getRandomNumber() {
 	return Math.floor(Math.random() * 5) + 1;
 }
-
 function handleStatePurchases(id, actionToDo) {
 	const compra = sistema.listaCompras.find((compra) => compra.id === id);
 	const user = sistema.listaCompradores.find(
@@ -939,6 +983,7 @@ function handleStatePurchases(id, actionToDo) {
 				`La compra de ${compra.producto.nombre} ha sido aprobada, stock restante ${compra.producto.stock} y saldo restante del usario ${user.usuario} es:$ ${user.saldo}`,
 				renderContentAdminListPurchasesHTML
 			);
+
 			if (stock === 0) {
 				compra.producto.isAvailable = false;
 			}
@@ -976,7 +1021,6 @@ function handleStatePurchases(id, actionToDo) {
 		}
 	}
 }
-
 function handleAlgorithmLuhn(numeroTarjeta) {
 	let tarjetaValida = false;
 	let digitoAVerificar = numeroTarjeta.charAt(numeroTarjeta.length - 1);
@@ -1009,33 +1053,6 @@ function handleAlgorithmLuhn(numeroTarjeta) {
 	}
 	return tarjetaValida;
 }
-
-function renderAddNewProductAdmin() {
-	renderSection = `
-    <div id="createProductForm">
-        <label for="txtName">Nombre del producto:</label>
-        <input type="text" id="txtName" required>
-
-        <label for="productValue">Precio:</label>
-        <input type="number" id="productValue" min="0" required>
-
-        <label for="productDescription">Descripción:</label>
-        <input type="text" id="productDescription" required>
-
-        <label for="urlImage">Url de la Imagen:</label>
-        <input type="text" id="urlImage" required>
-
-        <label for="productStock">Cantidad de stock disponible:</label>
-        <input type="number" id="productStock" min="0" required>
-
-        <button class="btnForm">Crear Producto</button>
-    </div>
-    `;
-	HTMLSECTION.innerHTML = renderSection;
-
-	addEventListenerSafely(".btnForm", "click", handleAddNewProductAdmin);
-}
-
 function handleAddNewProductAdmin() {
 	const name = document.getElementById("txtName").value.trim();
 	const description = document
@@ -1064,7 +1081,6 @@ function handleAddNewProductAdmin() {
 		renderAddNewProductAdmin
 	);
 }
-
 function handleCancelPurchase(event) {
 	const compraId = event.target.dataset.compraId;
 	const compraIndex = sistema.listaCompras.findIndex((c) => c.id === compraId);
@@ -1073,6 +1089,41 @@ function handleCancelPurchase(event) {
 		sistema.listaCompras.splice(compraIndex, 1);
 		renderHistoryOfPurchasesHTML();
 	}
+}
+
+function handleProfit() {
+	let cantidadTotalAcumulada = 0;
+	renderSection =
+		"<div class=containerInforme style='text-align: center; display: flex; flex-direction:column; justify-content: center; align-items: center;'><h2>Informe de ganancias</h2></div>";
+	HTMLSECTION.innerHTML = renderSection;
+	let informe = sistema.listaProductos.map((producto) => ({
+		nombre: producto.nombre,
+		cantidadVendida: 0,
+		gananciaTotal: 0,
+	}));
+
+	sistema.listaCompras.forEach((compra) => {
+		if (compra.status === "aprobada") {
+			let producto = informe.find(
+				(itme) => itme.nombre === compra.producto.nombre
+			);
+			if (producto) {
+				producto.cantidadVendida += compra.howMany;
+				producto.gananciaTotal += compra.precio * compra.howMany;
+			}
+		}
+	});
+
+	let informeHTML = "<h3>Informe de ganancias</h3>";
+	informe.forEach((producto) => {
+		if (producto.cantidadVendida > 0) {
+			informeHTML += `<p>Producto: ${producto.nombre}- Cantidad vendida: ${producto.cantidadVendida} - Ganancia de la venta: ${producto.gananciaTotal}</p>`;
+			cantidadTotalAcumulada += producto.gananciaTotal;
+		}
+	});
+	let informeHTML2 = `<p>Ganancias totales: ${cantidadTotalAcumulada}</p>`;
+	document.querySelector(".containerInforme").innerHTML =
+		informeHTML + informeHTML2;
 }
 
 const sistema = new Sistema();
