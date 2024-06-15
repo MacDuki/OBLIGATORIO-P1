@@ -1108,3 +1108,9 @@ h3 {
 	opacity: 1;
 	transform: translate(2em, 2em) rotate(-15deg);
 }
+
+.noPurchasesImage {
+	width: 300px;
+	height: 300px;
+	margin-left: 5rem;
+}

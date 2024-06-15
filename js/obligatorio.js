@@ -217,10 +217,15 @@ function renderNavHTML() {
 			</li>
 			<li>
 				<a class="createProduct">Crear producto</a>
+			</li>	
+			<li>
+				<a class='viewPurchases'>Administrar compras</a>
 			</li>
+		
 			<li>
 				<a class="signOut">Deslogearse</a>
 			</li>
+
 			
 		</ul>
 			`;
@@ -276,7 +281,11 @@ function renderNavHTML() {
 			.querySelector(".toggle-checkbox")
 			.addEventListener("change", handleNightMode);
 	}
-	addEventListenerSafely(".viewRevenueReport", "click", handleProfit);
+	addEventListenerSafely(
+		".viewRevenueReport",
+		"click",
+		renderAndHandleProfitInform
+	);
 	addEventListenerSafely(".signOut", "click", handleSignOut);
 	addEventListenerSafely(".buttonSectionChange", "click", handleProductsView);
 	addEventListenerSafely(
@@ -290,6 +299,11 @@ function renderNavHTML() {
 		renderAdministrateProductsHTML
 	);
 	addEventListenerSafely(".createProduct", "click", renderAddNewProductAdmin);
+	addEventListenerSafely(
+		".viewPurchases",
+		"click",
+		renderContentAdminListPurchasesHTML
+	);
 }
 function renderContentLoginHTML() {
 	renderSection = /*html*/ `
@@ -662,8 +676,22 @@ function renderContentAdminListPurchasesHTML() {
 		".purchasesCancelList"
 	);
 
-	sistema.listaCompras.forEach((compra) => {
+	if (sistema.listaCompras.length === 0) {
 		purchaseHTML = /*html*/ `
+        <div class="no-purchases-container">
+            <img
+                src="https://cdn-icons-png.freepik.com/512/7486/7486744.png"
+                alt="No hay compras"
+                class="noPurchasesImage"
+            />
+        </div>
+    `;
+		HTMLpurchasesPendingList.innerHTML += purchaseHTML;
+		HTMLpurchasesApprovedList.innerHTML += purchaseHTML;
+		HTMLpurchasesCancelList.innerHTML += purchaseHTML;
+	} else {
+		sistema.listaCompras.forEach((compra) => {
+			purchaseHTML = /*html*/ `
 		<div class="purchase-container-admin">
 			<div class="order-list-admin">
 				<div class="order-item-admin">
@@ -686,14 +714,15 @@ function renderContentAdminListPurchasesHTML() {
 		</div>
 		`;
 
-		if (compra.status === "pendiente") {
-			HTMLpurchasesPendingList.innerHTML += purchaseHTML;
-		} else if (compra.status === "aprobada") {
-			HTMLpurchasesApprovedList.innerHTML += purchaseHTML;
-		} else {
-			HTMLpurchasesCancelList.innerHTML += purchaseHTML;
-		}
-	});
+			if (compra.status === "pendiente") {
+				HTMLpurchasesPendingList.innerHTML += purchaseHTML;
+			} else if (compra.status === "aprobada") {
+				HTMLpurchasesApprovedList.innerHTML += purchaseHTML;
+			} else {
+				HTMLpurchasesCancelList.innerHTML += purchaseHTML;
+			}
+		});
+	}
 
 	document
 		.querySelectorAll(".order-status-admin-pendiente")
@@ -781,7 +810,42 @@ function renderAddNewProductAdmin() {
 
 	addEventListenerSafely(".btnForm", "click", handleAddNewProductAdmin);
 }
+function renderAndHandleProfitInform() {
+	let cantidadTotalAcumulada = 0;
+	renderSection =
+		"<div class=containerInforme style='text-align: center; display: flex; flex-direction:column; justify-content: center; align-items: center;'><h2>Informe de ganancias</h2></div>";
+	HTMLSECTION.innerHTML = renderSection;
+	let informe = sistema.listaProductos.map((producto) => ({
+		nombre: producto.nombre,
+		cantidadVendida: 0,
+		gananciaTotal: 0,
+	}));
 
+	sistema.listaCompras.forEach((compra) => {
+		if (compra.status === "aprobada") {
+			let producto = informe.find(
+				(itme) => itme.nombre === compra.producto.nombre
+			);
+			if (producto) {
+				producto.cantidadVendida += compra.howMany;
+				producto.gananciaTotal += compra.precio * compra.howMany;
+			}
+		}
+	});
+
+	let informeHTML = "<h3>Informe de ganancias</h3>";
+	informe.forEach((producto) => {
+		if (producto.cantidadVendida > 0) {
+			informeHTML += `<p>Producto: ${producto.nombre}- 
+			Cantidad vendida: ${producto.cantidadVendida} - 
+			Ganancia de la venta: ${producto.gananciaTotal}</p>`;
+			cantidadTotalAcumulada += producto.gananciaTotal;
+		}
+	});
+	let informeHTML2 = `<p>Ganancias totales:$ ${cantidadTotalAcumulada}</p>`;
+	document.querySelector(".containerInforme").innerHTML =
+		informeHTML + informeHTML2;
+}
 /*HANDLES --------------------------------------*/
 
 function handleUpdateProductPreview() {
@@ -1141,41 +1205,6 @@ function handleCancelPurchase(event) {
 		sistema.listaCompras.splice(compraIndex, 1);
 		renderHistoryOfPurchasesHTML();
 	}
-}
-
-function handleProfit() {
-	let cantidadTotalAcumulada = 0;
-	renderSection =
-		"<div class=containerInforme style='text-align: center; display: flex; flex-direction:column; justify-content: center; align-items: center;'><h2>Informe de ganancias</h2></div>";
-	HTMLSECTION.innerHTML = renderSection;
-	let informe = sistema.listaProductos.map((producto) => ({
-		nombre: producto.nombre,
-		cantidadVendida: 0,
-		gananciaTotal: 0,
-	}));
-
-	sistema.listaCompras.forEach((compra) => {
-		if (compra.status === "aprobada") {
-			let producto = informe.find(
-				(itme) => itme.nombre === compra.producto.nombre
-			);
-			if (producto) {
-				producto.cantidadVendida += compra.howMany;
-				producto.gananciaTotal += compra.precio * compra.howMany;
-			}
-		}
-	});
-
-	let informeHTML = "<h3>Informe de ganancias</h3>";
-	informe.forEach((producto) => {
-		if (producto.cantidadVendida > 0) {
-			informeHTML += `<p>Producto: ${producto.nombre}- Cantidad vendida: ${producto.cantidadVendida} - Ganancia de la venta: ${producto.gananciaTotal}</p>`;
-			cantidadTotalAcumulada += producto.gananciaTotal;
-		}
-	});
-	let informeHTML2 = `<p>Ganancias totales: ${cantidadTotalAcumulada}</p>`;
-	document.querySelector(".containerInforme").innerHTML =
-		informeHTML + informeHTML2;
 }
 
 const sistema = new Sistema();
