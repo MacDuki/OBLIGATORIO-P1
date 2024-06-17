@@ -633,8 +633,8 @@ function renderAdministrateProductsHTML() {
 				<legend class="isAvilable"> Disponible? <input type="checkbox" class="check" id="isAvilable" ${
 					producto.isAvailable ? "checked" : ""
 				} /></legend>
-				<legend class="isSale"> Está en oferta? <input type="checkbox" class="check" id="isSale" checked= ${
-					producto.isSale
+				<legend class="isSale"> Está en oferta? <input type="checkbox" class="check" id="isSale" ${
+					producto.isSale ? "checked" : ""
 				} /></legend>
 			</div>
 			<div class="btnsAdminActualizePoroduct">
@@ -644,7 +644,7 @@ function renderAdministrateProductsHTML() {
 				value="Ver producto"
 				class="btnComprarPruducto btn-shine "
 				data-idProducto="${producto.id}" >
-				<span>Actualizar <br/> producto</span>
+				<span data-idProducto=${producto.id}>Actualizar <br/> producto</span>
 			</button>
 			</div>
 		</div>
@@ -652,6 +652,47 @@ function renderAdministrateProductsHTML() {
 		document.querySelector(".productsContainerAdminView").innerHTML +=
 			productoHTML;
 	});
+
+	document.querySelectorAll(".btnComprarPruducto").forEach((btn) => {
+		btn.addEventListener("click", (event) => {
+			const productId = event.currentTarget.getAttribute("data-idProducto");
+			handleAdministrateProducts(productId);
+		});
+	});
+}
+
+function handleAdministrateProducts(idProducto) {
+	const producto = sistema.listaProductos.find(
+		(producto) => producto.id === idProducto
+	);
+	if (producto) {
+		const productContainer = document
+			.querySelector(`button[data-idProducto="${idProducto}"]`)
+			.closest(".productAdminView");
+
+		const newStock = productContainer.querySelector("#stock").value;
+		let newIsAvailable = productContainer.querySelector("#isAvilable").checked;
+		const newIsSale = productContainer.querySelector("#isSale").checked;
+
+		if (newStock === "0") {
+			newIsAvailable = false;
+		}
+		producto.stock = parseInt(newStock, 10);
+		producto.isAvailable = newIsAvailable;
+		producto.isSale = newIsSale;
+
+		renderPopUpHTML(
+			"Producto actualizado",
+			`Producto actualizado: ${producto.nombre}, stock actual: ${
+				producto.stock
+			}, disponible ?: ${producto.isAvailable ? `Sí` : "No"}, oferta ?: ${
+				producto.isSale ? "Sí" : "No"
+			}`,
+			renderAdministrateProductsHTML
+		);
+	} else {
+		console.error("Producto no encontrado");
+	}
 }
 function renderContentAdminListPurchasesHTML() {
 	renderSection = /*html*/ `
@@ -846,6 +887,7 @@ function renderAndHandleProfitInform() {
 	document.querySelector(".containerInforme").innerHTML =
 		informeHTML + informeHTML2;
 }
+
 /*HANDLES --------------------------------------*/
 
 function handleUpdateProductPreview() {
