@@ -1114,3 +1114,13 @@ h3 {
 	height: 300px;
 	margin-left: 5rem;
 }
+
+.balanceContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	text-decoration: underline;
+}

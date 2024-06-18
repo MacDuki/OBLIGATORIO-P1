@@ -146,7 +146,16 @@ class Administrador {
 }
 
 class Comprador {
-	constructor(nombre, apellido, usuario, pass, tarjeta, cvc, saldo = 3000) {
+	constructor(
+		nombre,
+		apellido,
+		usuario,
+		pass,
+		tarjeta,
+		cvc,
+		saldo = 3000,
+		totalComprasAprobadas = 0
+	) {
 		this.id = contadorCompradores;
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -155,6 +164,7 @@ class Comprador {
 		this.tarjeta = tarjeta;
 		this.cvc = cvc;
 		this.saldo = saldo;
+		this.totalComprasAprobadas = totalComprasAprobadas;
 		contadorCompradores++;
 	}
 }
@@ -367,40 +377,46 @@ function renderPopUpHTML(tittle, advise, returnFunction) {
 /*USER--------------------------------------------*/
 
 function renderContentRegistrarCompradorHTML() {
-	renderSection = /*html*/ `
-	<div>
-	<h2>Registrar Usuario</h2>
-				<form class="formRegistro">
-					<div>
-						<label for="txtNombre">Nombre</label>
-						<input type="text" id="txtNombre" required /> <br />
+	const renderSection = /*html*/ `
+    <div>
+    <h2>Registrar Usuario</h2>
+                <form class="formRegistro">
+                    <div>
+                        <label for="txtNombre">Nombre</label>
+                        <input type="text" id="txtNombre" required /> <br />
 
-						<label for="txtApellido">Apellido</label>
-						<input type="text" id="txtApellido" required /> <br />
+                        <label for="txtApellido">Apellido</label>
+                        <input type="text" id="txtApellido" required /> <br />
 
-						<label for="txtUsuario">Usuario</label>
-						<input type="text" id="txtUsuario" required /> <br />
-					</div>
-					<div>
-						<label for="txtContraseña">Contraseña</label>
-						<input type="text" id="txtContraseña" required /> <br />
+                        <label for="txtUsuario">Usuario</label>
+                        <input type="text" id="txtUsuario" required /> <br />
+                    </div>
+                    <div>
+                        <label for="txtContraseña">Contraseña</label>
+                        <input type="text" id="txtContraseña" required /> <br />
 
-						<label for="txtTarjeta">Tarjeta</label>
-						<input type="text" id="txtTarjeta" required /> <br />
+                        <label for="txtTarjeta">Tarjeta</label>
+                        <input type="text" id="txtTarjeta" required /> <br />
 
-						<label for="txtCvc">Cvc</label>
-						<input type="text" id="txtCvc" required /> <br />
-					</div>
-				</form>
-				<div class="buttonsContainerRegistro">
-					<input type="button" value="Volver" id="btnVolver" />
-					<input type="button" id="btnRegistrar" value="Registrar" />
-				</div>
-				</div>
-				`;
+                        <label for="txtCvc">Cvc</label>
+                        <input type="text" id="txtCvc" required /> <br />
+                    </div>
+                </form>
+                <div class="buttonsContainerRegistro">
+                    <input type="button" value="Volver" id="btnVolver" />
+                    <input type="button" id="btnRegistrar" value="Registrar" />
+                </div>
+                </div>
+                `;
 	HTMLSECTION.innerHTML = renderSection;
+
 	addEventListenerSafely("#btnVolver", "click", renderContentLoginHTML);
 	addEventListenerSafely("#btnRegistrar", "click", handleRegistrarComprador);
+
+	const tarjetaInput = document.querySelector("#txtTarjeta");
+	tarjetaInput.addEventListener("input", function () {
+		handleFormatCardNumber(tarjetaInput);
+	});
 }
 function renderContentHomeHTML() {
 	renderSection = /*html*/ `
@@ -552,6 +568,9 @@ function renderSalesProductsHTML() {
 	});
 }
 function renderHistoryOfPurchasesHTML() {
+	const user = sistema.listaCompradores.find(
+		(comprador) => comprador.usuario === userLoged
+	);
 	renderSection = /*html*/ `
 	<div>
 	<h2>Historial de compra</h2>
@@ -562,35 +581,71 @@ function renderHistoryOfPurchasesHTML() {
 	HTMLSECTION.innerHTML = renderSection;
 	sistema.listaCompras.forEach((compra) => {
 		if (compra.usuario === userLoged) {
+			let statusHtml = "";
+			if (compra.status === "pendiente") {
+				statusHtml = `
+					<button class="btnChangeStatusToCanceled" data-compra-id="${compra.id}">Cancelar producto</button>
+				`;
+			} else if (compra.status === "aprobada") {
+				statusHtml =
+					"<img alt='compra aprobada' src='/assets/comprobado-icon.svg' />";
+			} else {
+				statusHtml =
+					"<img alt='compra aprobada' src='/assets/cancelado-icon.svg' />";
+			}
+
 			document.querySelector(
 				".historyOfPurchasesContainer"
 			).innerHTML += /*html*/ `
-	<div class="purchase-container">
-		<div class="order-list">
-			<div class="order-item">
-				<img
-				src="${compra.producto.urlImagen}"
-				alt="${compra.producto.nombre}"
-				width="80"
-				height="80"
-				class="order-image"
-				/>
-			<div class="order-info">
-					<h3 class="order-title">${compra.producto.nombre}</h3>
-						<div class="order-price">$ ${compra.precio * compra.howMany}</div>
-					<p class="order-quantity">${compra.howMany} unidades</p>
-			</div>
-			<div class="order-status">
-				<span>Estado:</span>
-				<p>${compra.status}</p>
-				<button class="btnChangeStatusToCanceled" data-compra-id="${
-					compra.id
-				}">Cancelar producto</button>
-			</div>
-	</div>
-`;
+				<div class="purchase-container">
+					<div class="order-list">
+						<div class="order-item">
+							<img
+								src="${compra.producto.urlImagen}"
+								alt="${compra.producto.nombre}"
+								width="80"
+								height="80"
+								class="order-image"
+							/>
+							<div class="order-info">
+								<h3 class="order-title">${compra.producto.nombre}</h3>
+								<div class="order-price">$ ${compra.precio * compra.howMany}</div>
+								<p class="order-quantity">${compra.howMany} unidades</p>
+							</div>
+							<div class="order-status">
+								<span>Estado:</span>
+								<p>${compra.status}</p>
+								${statusHtml}
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
 		}
 	});
+
+	if (sistema.listaCompras.length === 0) {
+		document.querySelector(
+			".historyOfPurchasesContainer"
+		).innerHTML += /*html*/ `
+		<div class="no-purchases-container">
+		<img
+			src="https://cdn-icons-png.freepik.com/512/7486/7486744.png"
+			alt="No hay compras"
+			class="noPurchasesImage"
+			style="margin-right: 8rem;"
+		/>
+	</div>
+		`;
+	}
+
+	document.querySelector(".historyOfPurchasesContainer").innerHTML += /*html*/ `
+		<div class="balanceContainer">
+			<p>Las compras suman: $ ${user.totalComprasAprobadas}</p>
+			<p>El saldo actual es: $ ${user.saldo}</p>
+	</div>
+		`;
+
 	const cancelButtons = document.querySelectorAll(".btnChangeStatusToCanceled");
 	cancelButtons.forEach((button) => {
 		button.addEventListener("click", handleCancelPurchase);
@@ -661,39 +716,6 @@ function renderAdministrateProductsHTML() {
 	});
 }
 
-function handleAdministrateProducts(idProducto) {
-	const producto = sistema.listaProductos.find(
-		(producto) => producto.id === idProducto
-	);
-	if (producto) {
-		const productContainer = document
-			.querySelector(`button[data-idProducto="${idProducto}"]`)
-			.closest(".productAdminView");
-
-		const newStock = productContainer.querySelector("#stock").value;
-		let newIsAvailable = productContainer.querySelector("#isAvilable").checked;
-		const newIsSale = productContainer.querySelector("#isSale").checked;
-
-		if (newStock === "0") {
-			newIsAvailable = false;
-		}
-		producto.stock = parseInt(newStock, 10);
-		producto.isAvailable = newIsAvailable;
-		producto.isSale = newIsSale;
-
-		renderPopUpHTML(
-			"Producto actualizado",
-			`Producto actualizado: ${producto.nombre}, stock actual: ${
-				producto.stock
-			}, disponible ?: ${producto.isAvailable ? `Sí` : "No"}, oferta ?: ${
-				producto.isSale ? "Sí" : "No"
-			}`,
-			renderAdministrateProductsHTML
-		);
-	} else {
-		console.error("Producto no encontrado");
-	}
-}
 function renderContentAdminListPurchasesHTML() {
 	renderSection = /*html*/ `
 	<div class="adminHome"> 
@@ -732,6 +754,9 @@ function renderContentAdminListPurchasesHTML() {
 		HTMLpurchasesCancelList.innerHTML += purchaseHTML;
 	} else {
 		sistema.listaCompras.forEach((compra) => {
+			const user = sistema.listaCompradores.find(
+				(user) => user.usuario === compra.usuario
+			);
 			purchaseHTML = /*html*/ `
 		<div class="purchase-container-admin">
 			<div class="order-list-admin">
@@ -747,6 +772,7 @@ function renderContentAdminListPurchasesHTML() {
 						<h3 class="order-title">${compra.producto.nombre}</h3>
 						<p class="order-quantity">${compra.howMany} unidades</p>
 						<p class="order-user">Usuario: ${compra.usuario}</p>
+						<p class="order-quantity">El saldo del usuario es:$ ${user.saldo}</p>
 					</div>
 					<div class="order-status-admin-${compra.status}">
 					</div>
@@ -889,7 +915,50 @@ function renderAndHandleProfitInform() {
 }
 
 /*HANDLES --------------------------------------*/
+function handleAdministrateProducts(idProducto) {
+	let newIsAvailable = false;
+	const producto = sistema.listaProductos.find(
+		(producto) => producto.id === idProducto
+	);
+	if (producto) {
+		const productContainer = document
+			.querySelector(`button[data-idProducto="${idProducto}"]`)
+			.closest(".productAdminView");
 
+		const newStock = parseInt(
+			productContainer.querySelector("#stock").value,
+			10
+		);
+		if (newStock < 1) {
+			producto.isAvailable = false;
+		} else {
+			newIsAvailable = productContainer.querySelector("#isAvilable").checked;
+			producto.isAvailable = newIsAvailable;
+		}
+
+		const newIsSale = productContainer.querySelector("#isSale").checked;
+		producto.stock = newStock;
+		producto.isSale = newIsSale;
+
+		renderPopUpHTML(
+			"Producto actualizado",
+			`${producto.nombre}, <br/>
+			stock actual: ${producto.stock}, <br/>
+			${
+				producto.isAvailable
+					? `El producto estará disponible`
+					: "El producto NO estará disponible"
+			},<br/>  ${
+				producto.isSale
+					? "El producto estará en oferta"
+					: "El producto NO estará en oferta"
+			}`,
+			renderAdministrateProductsHTML
+		);
+	} else {
+		console.error("Producto no encontrado");
+	}
+}
 function handleUpdateProductPreview() {
 	const name =
 		document.getElementById("txtName").value || "Nombre del producto";
@@ -1020,7 +1089,7 @@ function handleRegistrarComprador() {
 	let usuario = document.getElementById("txtUsuario").value.toLowerCase();
 	let pass = document.getElementById("txtContraseña").value;
 	let tarjeta = Number(document.getElementById("txtTarjeta").value);
-	let cvc = Number(document.getElementById("txtCvc").value);
+	let cvc = document.getElementById("txtCvc").value;
 	const nuevoComprador = new Comprador(
 		nombre,
 		apellido,
@@ -1030,10 +1099,12 @@ function handleRegistrarComprador() {
 		cvc
 	);
 
-	const formatoPass = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{5,}$/;
+	const formatoPass = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{5,}$/;
 	const formatoCvc = /^[0-9]{3}$/;
 
-	let numeroTarjeta = document.getElementById("txtTarjeta").value;
+	let numeroTarjeta = document
+		.getElementById("txtTarjeta")
+		.value.replace(/-/g, "");
 	let esTarjetaValida = handleAlgorithmLuhn(numeroTarjeta);
 
 	if (
@@ -1135,15 +1206,22 @@ function handleStatePurchases(id, actionToDo) {
 		) {
 			compra.status = "aprobada";
 			user.saldo -= compraCost;
+			user.totalComprasAprobadas += compraCost;
 			compra.producto.stock -= compra.howMany;
+
 			renderPopUpHTML(
 				"Compra aprobada",
 				`La compra de ${compra.producto.nombre} ha sido aprobada, stock restante ${compra.producto.stock} y saldo restante del usario ${user.usuario} es:$ ${user.saldo}`,
 				renderContentAdminListPurchasesHTML
 			);
 
-			if (stock === 0) {
+			if (compra.producto.stock < 1) {
 				compra.producto.isAvailable = false;
+				renderPopUpHTML(
+					"Compra aprobada",
+					`La compra de ${compra.producto.nombre} ha sido aprobada, pero el stock del producto ha llegado a cero, no se puede comprar más.`,
+					renderContentAdminListPurchasesHTML
+				);
 			}
 		} else if (
 			(actionToDo === "aprobar" && !(compraCost <= user.saldo)) ||
@@ -1243,10 +1321,15 @@ function handleCancelPurchase(event) {
 	const compraId = event.target.dataset.compraId;
 	const compraIndex = sistema.listaCompras.findIndex((c) => c.id === compraId);
 	if (compraIndex !== -1) {
-		sistema.listaCompras[compraIndex].status = "cancelado";
-		sistema.listaCompras.splice(compraIndex, 1);
+		sistema.listaCompras[compraIndex].status = "cancelada";
 		renderHistoryOfPurchasesHTML();
 	}
 }
-
+function handleFormatCardNumber(input) {
+	const value = input.value.replace(/\D/g, "").substring(0, 16);
+	const formattedValue = value.replace(/(.{4})/g, "$1-").trim();
+	input.value = formattedValue.endsWith("-")
+		? formattedValue.slice(0, -1)
+		: formattedValue;
+}
 const sistema = new Sistema();
