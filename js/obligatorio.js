@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const HTMLNAVBAR = document.querySelector(".navBar");
+HTMLNAVBAR.classList.add("fade-in-nav");
 const HTMLSECTION = document.getElementById("SECTION");
 let renderSection = "";
 let renderNavBar = "";
@@ -317,7 +318,7 @@ function renderNavHTML() {
 }
 function renderContentLoginHTML() {
 	renderSection = /*html*/ `
-	<div>
+	<div class="fade-in">
 			<h2>Login</h2>
 			<label for="txtLoginUsuario">Usuario</label>
 			<input type="text" id="txtLoginUsuario" />
@@ -378,7 +379,7 @@ function renderPopUpHTML(tittle, advise, returnFunction) {
 
 function renderContentRegistrarCompradorHTML() {
 	const renderSection = /*html*/ `
-    <div>
+    <div class="fade-in">
     <h2>Registrar Usuario</h2>
                 <form class="formRegistro">
                     <div>
@@ -420,7 +421,7 @@ function renderContentRegistrarCompradorHTML() {
 }
 function renderContentHomeHTML() {
 	renderSection = /*html*/ `
-				<div>
+				<div class="fade-in">
 				<h2>Home</h2>
 				<div class="productosContainer  ${isNightMode ? "nightMode" : ""}"></div>
 				</div>
@@ -467,7 +468,9 @@ function renderProductDetailsHTML(idProducto) {
 		(producto) => producto.id === idProducto
 	);
 	renderSection = /*html*/ `
-	  <div class="productoDetailsContainer ${isNightMode ? "nightMode" : ""}">
+	  <div class="productoDetailsContainer  fade-in ${
+			isNightMode ? "nightMode" : ""
+		}">
 		<div class="exitButtonDetailsContainer">
 		  <button class="exitButtonDetails">
 		  <span class="X"></span>
@@ -521,7 +524,7 @@ function renderProductDetailsHTML(idProducto) {
 }
 function renderSalesProductsHTML() {
 	renderSection = /*html*/ `
-	<div>
+	<div class="fade-in">
 	<h2>Ofertas</h2>
 	<div class="productosEnOfertaContainer"></div>	
 	</div>
@@ -572,7 +575,7 @@ function renderHistoryOfPurchasesHTML() {
 		(comprador) => comprador.usuario === userLoged
 	);
 	renderSection = /*html*/ `
-	<div>
+	<div class="fade-in">
 	<h2>Historial de compra</h2>
 	<div class="historyOfPurchasesContainer"></div>
 	</div>
@@ -656,7 +659,7 @@ function renderHistoryOfPurchasesHTML() {
 
 function renderAdministrateProductsHTML() {
 	renderSection = /*html*/ `
-	<div>
+	<div class="fade-in">
 		<h2>Administrar productos</h2>
 		<div class="productsContainerAdminView"></div>
 	</div>
@@ -718,7 +721,7 @@ function renderAdministrateProductsHTML() {
 
 function renderContentAdminListPurchasesHTML() {
 	renderSection = /*html*/ `
-	<div class="adminHome"> 
+	<div class="adminHome fade-in"> 
 	<h2>Lista de compras</h2>
 	<div class="purchasesListsContainer">
 	<div class="purchasesPendingList"><p class="parrafo-tittle-admin-container">Compras pendientes</p></div>
@@ -850,7 +853,7 @@ function renderContentAdminListPurchasesHTML() {
 }
 function renderAddNewProductAdmin() {
 	renderSection = `
-    <div id="createProductForm">
+    <div id="createProductForm" class="fade-in">
         <label for="txtName">Nombre del producto:</label>
         <input type="text" id="txtName" required>
 
