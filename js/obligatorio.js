@@ -574,85 +574,154 @@ function renderHistoryOfPurchasesHTML() {
 	const user = sistema.listaCompradores.find(
 		(comprador) => comprador.usuario === userLoged
 	);
-	renderSection = /*html*/ `
-	<div class="fade-in">
-	<h2>Historial de compra</h2>
-	<div class="historyOfPurchasesContainer"></div>
-	</div>
-	
-	`;
-	HTMLSECTION.innerHTML = renderSection;
-	sistema.listaCompras.forEach((compra) => {
-		if (compra.usuario === userLoged) {
-			let statusHtml = "";
-			if (compra.status === "pendiente") {
-				statusHtml = `
-					<button class="btnChangeStatusToCanceled" data-compra-id="${compra.id}">Cancelar producto</button>
-				`;
-			} else if (compra.status === "aprobada") {
-				statusHtml =
-					"<img alt='compra aprobada' src='/assets/comprobado-icon.svg' />";
-			} else {
-				statusHtml =
-					"<img alt='compra aprobada' src='/assets/cancelado-icon.svg' />";
-			}
 
-			document.querySelector(
-				".historyOfPurchasesContainer"
-			).innerHTML += /*html*/ `
-				<div class="purchase-container">
-					<div class="order-list">
-						<div class="order-item">
-							<img
-								src="${compra.producto.urlImagen}"
-								alt="${compra.producto.nombre}"
-								width="80"
-								height="80"
-								class="order-image"
-							/>
-							<div class="order-info">
-								<h3 class="order-title">${compra.producto.nombre}</h3>
-								<div class="order-price">$ ${compra.precio * compra.howMany}</div>
-								<p class="order-quantity">${compra.howMany} unidades</p>
-							</div>
-							<div class="order-status">
-								<span>Estado:</span>
-								<p>${compra.status}</p>
-								${statusHtml}
-							</div>
-						</div>
-					</div>
-				</div>
-			`;
-		}
-	});
+	let actualSectionIndex = 0;
+	const sections = [
+		"Todas las compras",
+		"compras pendientes",
+		"compras canceladas",
+		"compras aprobadas",
+	];
 
-	if (sistema.listaCompras.length === 0) {
-		document.querySelector(
+	function renderPurchases(section) {
+		const purchasesContainer = document.querySelector(
 			".historyOfPurchasesContainer"
-		).innerHTML += /*html*/ `
-		<div class="no-purchases-container">
-		<img
-			src="https://cdn-icons-png.freepik.com/512/7486/7486744.png"
-			alt="No hay compras"
-			class="noPurchasesImage"
-			style="margin-right: 8rem;"
-		/>
-	</div>
-		`;
+		);
+		purchasesContainer.innerHTML = "";
+
+		const filteredPurchases = sistema.listaCompras.filter((compra) => {
+			if (compra.usuario !== userLoged) return false;
+			if (section === "Todas las compras") return true;
+			if (section === "compras pendientes" && compra.status === "pendiente")
+				return true;
+			if (section === "compras canceladas" && compra.status === "cancelada")
+				return true;
+			if (section === "compras aprobadas" && compra.status === "aprobada")
+				return true;
+			return false;
+		});
+
+		if (filteredPurchases.length === 0) {
+			purchasesContainer.innerHTML += `
+                <div class="no-purchases-container">
+                    <img
+                        src="https://cdn-icons-png.freepik.com/512/7486/7486744.png"
+                        alt="No hay compras"
+                        class="noPurchasesImage"
+                        style="margin-right: 8rem;"
+                    />
+                </div>
+            `;
+		} else {
+			filteredPurchases.forEach((compra) => {
+				let statusHtml = "";
+				if (compra.status === "pendiente") {
+					statusHtml = `
+                        <button class="btnChangeStatusToCanceled" data-compra-id="${compra.id}">Cancelar producto</button>
+                    `;
+				} else if (compra.status === "aprobada") {
+					statusHtml =
+						"<img alt='compra aprobada' src='/assets/comprobado-icon.svg' />";
+				} else {
+					statusHtml =
+						"<img alt='compra cancelada' src='/assets/cancelado-icon.svg' />";
+				}
+
+				purchasesContainer.innerHTML += `
+                    <div class="purchase-container">
+                        <div class="order-list">
+                            <div class="order-item">
+                                <img
+                                    src="${compra.producto.urlImagen}"
+                                    alt="${compra.producto.nombre}"
+                                    width="80"
+                                    height="80"
+                                    class="order-image"
+                                />
+                                <div class="order-info">
+                                    <h3 class="order-title">${
+																			compra.producto.nombre
+																		}</h3>
+                                    <div class="order-price">$ ${
+																			compra.precio * compra.howMany
+																		}</div>
+                                    <p class="order-quantity">${
+																			compra.howMany
+																		} unidades</p>
+                                </div>
+                                <div class="order-status">
+                                    <span>Estado:</span>
+                                    <p>${compra.status}</p>
+                                    ${statusHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+			});
+		}
+
+		purchasesContainer.innerHTML += `
+            <div class="balanceContainer">
+                <p>Las compras suman: $ ${user.totalComprasAprobadas}</p>
+                <p>El saldo actual es: $ ${user.saldo}</p>
+            </div>
+        `;
+
+		const cancelButtons = document.querySelectorAll(
+			".btnChangeStatusToCanceled"
+		);
+		cancelButtons.forEach((button) => {
+			button.addEventListener("click", handleCancelPurchase);
+		});
 	}
 
-	document.querySelector(".historyOfPurchasesContainer").innerHTML += /*html*/ `
-		<div class="balanceContainer">
-			<p>Las compras suman: $ ${user.totalComprasAprobadas}</p>
-			<p>El saldo actual es: $ ${user.saldo}</p>
-	</div>
-		`;
+	function updateSection() {
+		const actualSection = sections[actualSectionIndex];
+		document.querySelector(".divArrowContainer h3").textContent = actualSection;
+		renderPurchases(actualSection);
+	}
 
-	const cancelButtons = document.querySelectorAll(".btnChangeStatusToCanceled");
-	cancelButtons.forEach((button) => {
-		button.addEventListener("click", handleCancelPurchase);
-	});
+	function handleLeftArrowClick() {
+		if (actualSectionIndex > 0) {
+			actualSectionIndex--;
+		} else {
+			actualSectionIndex = sections.length - 1;
+		}
+		updateSection();
+	}
+
+	function handleRightArrowClick() {
+		if (actualSectionIndex < sections.length - 1) {
+			actualSectionIndex++;
+		} else {
+			actualSectionIndex = 0;
+		}
+		updateSection();
+	}
+
+	let renderSection = /*html*/ `
+        <div class="fade-in">
+            <h2>Historial de compras</h2>
+            <div class="divArrowContainer">
+                <img src="../assets/flecha-icon.png" class="leftArrow" />
+                <h3>${sections[actualSectionIndex]}</h3>
+                <img src="../assets/flecha-icon.png" class="rightArrow" />
+            </div>
+            <div class="historyOfPurchasesContainer"></div>
+        </div>
+    `;
+
+	HTMLSECTION.innerHTML = renderSection;
+
+	document
+		.querySelector(".leftArrow")
+		.addEventListener("click", handleLeftArrowClick);
+	document
+		.querySelector(".rightArrow")
+		.addEventListener("click", handleRightArrowClick);
+
+	updateSection();
 }
 
 /*ADMIN ----------------------------------------*/
