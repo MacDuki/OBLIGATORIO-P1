@@ -1132,16 +1132,36 @@ h3 {
 	animation: fade-in-nav 0.5s forwards;
 }
 
+.sectionTitle,
+.purchase-container {
+	animation: translatex 0.5s forwards;
+}
+
+@keyframes translatex {
+	from {
+		opacity: 0;
+		transform: translateX(-100px);
+		scale: 0.8;
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+		scale: 1;
+	}
+}
+
 @keyframes fade-in-nav {
 	from {
 		opacity: 0;
 		transform: translateY(-100px);
 		scale: 0.8;
+		border-radius: 10rem;
 	}
 	to {
 		opacity: 1;
 		transform: translateY(0);
 		scale: 1;
+		border-radius: none;
 	}
 }
 
@@ -1156,4 +1176,24 @@ h3 {
 		transform: translateY(0);
 		scale: 1;
 	}
+}
+.divArrowContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+}
+
+.divArrowContainer img {
+	margin-bottom: 1rem;
+	transition: all 0.2s linear;
+}
+
+.divArrowContainer img:first-child {
+	transform: rotate(180deg);
+}
+
+.divArrowContainer img:hover {
+	scale: 1.2;
+	cursor: pointer;
 }
