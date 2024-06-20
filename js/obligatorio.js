@@ -74,7 +74,7 @@ class Sistema {
 				"https://m.media-amazon.com/images/I/51esH1W-asL._AC_UF1000,1000_QL80_.jpg",
 				99,
 				200,
-				false
+				true
 			),
 			new Producto(
 				"Pelota de Fútbol",
@@ -82,21 +82,23 @@ class Sistema {
 				"https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/%D0%A4%D0%9A_%22%D0%9A%D0%BE%D0%BB%D0%BE%D1%81%22_%28%D0%97%D0%B0%D1%87%D0%B5%D0%BF%D0%B8%D0%BB%D0%BE%D0%B2%D0%BA%D0%B0%2C_%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_-_%D0%A4%D0%9A_%22%D0%91%D0%B0%D0%BB%D0%BA%D0%B0%D0%BD%D1%8B%22_%28%D0%97%D0%B0%D1%80%D1%8F%2C_%D0%9E%D0%B4%D0%B5%D1%81%D1%81%D0%BA%D0%B0%D1%8F_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C%29_%2818790931100%29.jpg/800px-thumbnail.jpg",
 				35,
 				150,
-				false
+				true
 			),
 			new Producto(
 				"Raqueta de Tenis",
 				"Raqueta de tenis ligera y resistente para jugadores avanzados.",
 				"https://t1.uc.ltmcdn.com/es/posts/6/9/5/tipos_de_deportes_con_raqueta_52596_orig.jpg",
 				120,
-				5
+				5,
+				true
 			),
 			new Producto(
 				"Bicicleta de Montaña",
 				"Bicicleta de montaña con suspensión total y frenos de disco.",
 				"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyetlWe_qkbTADZpDQjf81XtUYpBeuSpefkw&s",
 				450,
-				30
+				30,
+				true
 			),
 			new Producto(
 				"Guantes de mma",
@@ -104,7 +106,6 @@ class Sistema {
 				"https://m.media-amazon.com/images/I/71gGKDXdoPL._AC_UF1000,1000_QL80_.jpg",
 				85,
 				200,
-				true,
 				true
 			),
 			new Producto(
@@ -114,35 +115,38 @@ class Sistema {
 				60,
 				100,
 				true,
-				true
 			),
 			new Producto(
 				"Pesas Ajustables",
 				"Juego de pesas ajustables con incrementos de 2.5 kg.",
 				"https://m.media-amazon.com/images/I/71CxDTwx03L._AC_UF894,1000_QL80_.jpg",
 				150,
-				50
+				50,
+				true
 			),
 			new Producto(
 				"Casco de Ciclismo",
 				"Casco de ciclismo aerodinámico con ventilación mejorada.",
 				"https://images.ecestaticos.com/oRpsnZZrRBfcZAzDhIseaACvYFk=/1x151:999x659/1440x810/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fbd5%2Fa89%2Fc26%2Fbd5a89c26e32422bc1677edcdf1579e6.jpg",
 				45,
-				120
+				120,
+				true
 			),
 			new Producto(
 				"Traje de Neopreno",
 				"Traje de neopreno de 3mm ideal para deportes acuáticos.",
 				"https://contents.mediadecathlon.com/p1554251/k$9dd3c3eebf92602ef08663c0bd20cd6a/neopreno-surf-hombre-agua-fria-4slash3mm-negro.jpg?format=auto&quality=40&f=800x800",
 				180,
-				25
+				25,
+				true
 			),
 			new Producto(
 				"Saco de Dormir",
 				"Saco de dormir ultraligero para acampada y senderismo.",
 				"https://http2.mlstatic.com/D_NQ_NP_889663-MLU73954308613_012024-O.webp",
 				70,
-				80
+				80,
+				true
 			),
 		];
 		this.listaCompras = [
