@@ -21,13 +21,16 @@ class Sistema {
 		this.listaAdministradores = [
 			new Administrador("juan", "juan123"),
 			new Administrador("pedro", "pedro123"),
+			new Administrador("Alberto2024", "Alberto2024"),
+			new Administrador("programadorAdmin", "Ort2099"),
+			new Administrador("soyCoder", "Codigo99"),
 		];
 		this.listaCompradores = [
 			new Comprador(
 				"alberto",
 				"Fernandez",
 				"alberto123",
-				"contraseñaFuerte1",
+				"contraseñaFuerte0",
 				"5555-1456-2858-9999",
 				"124"
 			),
@@ -37,7 +40,31 @@ class Sistema {
 				"fran123",
 				"contraseñaFuerte1",
 				"1115-1366-9858-7799",
-				"185"
+				"115"
+			),
+			new Comprador(
+				"Pedro",
+				"Watiimo",
+				"pedrowatt",
+				"contraseñaFuerte2",
+				"1115-1366-9858-7799",
+				"195"
+			),
+			new Comprador(
+				"Luis",
+				"Lacalle",
+				"luislacalle",
+				"contraseñaFuerte99999",
+				"1115-1366-9858-7799",
+				"999"
+			),
+			new Comprador(
+				"Lionel",
+				"Messi",
+				"leomessi",
+				"leoMessiElMejor",
+				"1115-1366-9858-7799",
+				"000"
 			),
 		];
 		this.listaProductos = [
@@ -67,12 +94,12 @@ class Sistema {
 			new Producto(
 				"Bicicleta de Montaña",
 				"Bicicleta de montaña con suspensión total y frenos de disco.",
-				"https://chedrauimx.vtexassets.com/arquivos/ids/30669159-800-auto?v=638518189250000000&width=800&height=auto&aspect=true",
+				"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyetlWe_qkbTADZpDQjf81XtUYpBeuSpefkw&s",
 				450,
 				30
 			),
 			new Producto(
-				"Guantes de mama",
+				"Guantes de mma",
 				"Guantes de boxeo de cuero con relleno extra para mayor protección.",
 				"https://m.media-amazon.com/images/I/71gGKDXdoPL._AC_UF1000,1000_QL80_.jpg",
 				85,
@@ -118,7 +145,38 @@ class Sistema {
 				80
 			),
 		];
-		this.listaCompras = [];
+		this.listaCompras = [
+			new compra({
+				usuario: "fran123",
+				producto: this.listaProductos[1],
+				precio: this.listaProductos[1].precio,
+				howMany: 3,
+			}),
+			new compra({
+				usuario: "fran123",
+				producto: this.listaProductos[0],
+				precio: this.listaProductos[0].precio,
+				howMany: 1,
+			}),
+			new compra({
+				usuario: "fran123",
+				producto: this.listaProductos[9],
+				precio: this.listaProductos[9].precio,
+				howMany: 1,
+			}),
+			new compra({
+				usuario: "luislacalle",
+				producto: this.listaProductos[5],
+				precio: this.listaProductos[5].precio,
+				howMany: 2,
+			}),
+			new compra({
+				usuario: "luislacalle",
+				producto: this.listaProductos[6],
+				precio: this.listaProductos[6].precio,
+				howMany: 5,
+			}),
+		];
 	}
 
 	esUsuarioUnico(usuario) {
