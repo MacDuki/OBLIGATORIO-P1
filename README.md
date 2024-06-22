@@ -4,11 +4,15 @@
 
 Este proyecto consiste en el desarrollo de un sistema de e-commerce para la venta de artículos deportivos. La aplicación está diseñada para gestionar dos tipos de usuarios: administradores y compradores. Cada tipo de usuario tiene funcionalidades específicas que le permiten interactuar con el sistema según sus roles y necesidades.
 
+## Objetivo adicional del equipo. 
+Se realizó el proyecto intentando utilizar lo menos posible HTML, en su lugar, decidimos inyectar todo directamente desde js con el fin de hacerlo completamente dinámico. 
 
 ## Tecnologías Utilizadas
 
-El proyecto está desarrollado utilizando JavaScript (JS) y CSS en su versión vanilla, sin el uso de frameworks ni librerías externas. La estructura del código sigue el paradigma de programación orientada a objetos (POO) y fue hecho de manera colaborativa utilizando git-github entre los compañeros del equipo.
+El proyecto está desarrollado utilizando JavaScript (JS) y CSS en su versión vanilla, sin el uso de frameworks ni librerías externas (A excepçión de Eslint para formatear el código). La estructura del código sigue el paradigma de programación orientada a objetos (POO) y fue hecho de manera colaborativa utilizando git-github entre los compañeros del equipo.
 
+## Aclaraciones. 
+En ningún momento se tuvo en cuenta la semántica de las etiquetas utilizadas y tampoco se tuvo la intención de hacerlo responsive. Comprendemos la importancia de dichos metodos y consideraciones pero el objetivo principal del proyecto fue el trabajar con POO y no usar HTML direcatamente.
 
 ## Funcionalidades
 
