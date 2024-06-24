@@ -1467,3 +1467,18 @@ function handleFormatCardNumber(input) {
 		: formattedValue;
 }
 const sistema = new Sistema();
+
+(function () {
+  let mensaje = "Administradores:\n";
+  for (let admin of sistema.listaAdministradores) {
+    mensaje += `Usuario: ${admin.usuario}, Contraseña: ${admin.pass}\n`;
+  }
+
+  mensaje += "\nCompradores:\n";
+  for (let comprador of sistema.listaCompradores) {
+    mensaje += `Usuario: ${comprador.usuario}, Contraseña: ${comprador.pass}\n`;
+  }
+
+  alert(mensaje);
+})();
+
